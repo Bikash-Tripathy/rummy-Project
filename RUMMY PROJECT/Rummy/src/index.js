@@ -11,6 +11,7 @@ const handRoute = require("./route/handRoutes")
 const gameRoute = require("./route/gameRoutes")
 const lobbyRoute = require("./route/lobbyRoutes")
 const rummyRoutes = require('./route/rummyRoutes')
+//const setupServer = require('./server');
 const app = express()
 const cors = require("cors")
 
@@ -22,6 +23,8 @@ app.use(cors())
 mongoose.connect("mongodb+srv://BIKASH:2NQSqnkWjFq2TWNe@cluster0.bbmcbft.mongodb.net/rummy",{usenewUrlParser : true})
 .then(()=>console.log("MongoDB is connected"))
 .catch((err)=>console.log(err.message))
+
+//setupServer();
 
 app.use("/",route)
 app.use("/",pockerRoute)
