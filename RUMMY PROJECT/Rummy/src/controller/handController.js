@@ -1,41 +1,41 @@
 // controllers/handController.js
-const Hand = require('../model/Hand');
+// const Hand = require('../model/Hand');
 
-// Create a new hand
-exports.createHand = async (req, res) => {
-  try {
-    const { gameId, cards, winningPlayer } = req.body;
+// // Create a new hand
+// exports.createHand = async (req, res) => {
+//   try {
+//     const { gameId, cards, winningPlayer } = req.body;
 
-    const hand = new Hand({
-      gameId,
-      cards,
-      winningPlayer,
-    });
+//     const hand = new Hand({
+//       gameId,
+//       cards,
+//       winningPlayer,
+//     });
 
-    await hand.save();
-    res.status(201).json(hand);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server error' });
-  }
-};
+//     await hand.save();
+//     res.status(201).json(hand);
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ message: 'Server error' });
+//   }
+// };
 
-// Get all hands
-exports.listHands = async (req, res) => {
-  try {
-    const hands = await Hand.find();
-    res.status(200).json(hands);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server error' });
-  }
-};
+// // Get all hands
+// exports.listHands = async (req, res) => {
+//   try {
+//     const hands = await Hand.find();
+//     res.status(200).json(hands);
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ message: 'Server error' });
+//   }
+// };
 
 // Other controller functions (update, delete) can be added here.
 
 
 
-// Define card values and suits
+//Define card values and suits
 const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'Jack', 'Queen', 'King', 'Ace'];
 const suits = ['Hearts', 'Diamonds', 'Clubs', 'Spades'];
 
@@ -48,24 +48,35 @@ function createShuffledDeck() {
     }
   }
 
-  // Shuffle the deck using the Fisher-Yates shuffle algorithm
+  //Shuffle the deck using the Fisher-Yates shuffle algorithm
   for (let i = deck.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [deck[i], deck[j]] = [deck[j], deck[i]];
   }
+ 
 
   return deck;
 }
+// const deck = createShuffledDeck();
+// console.log(deck);
 
-// Function to shuffle an array (Fisher-Yates shuffle)
+//Function to shuffle an array (Fisher-Yates shuffle)
 function shuffleArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [array[i], array[j]] = [array[j], array[i]];
   }
+  return array;
 }
+const myArray = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
-// Function to deal cards to players
+// Shuffle the array
+shuffleArray(myArray);
+
+// Display the shuffled array
+console.log(myArray);
+
+// // Function to deal cards to players
 function dealCards(players, deck) {
   const numberOfCardsPerPlayer = 10; // Adjust as needed
 
@@ -100,14 +111,14 @@ function isSequence(cards) {
   return true;
 }
 
-// Function to check if an array of cards forms a set
-function isSet(cards) {
+// // Function to check if an array of cards forms a set
+ function isSet(cards) {
   // Check if all the cards have the same rank (value)
   const firstValue = cards[0].value;
   return cards.every((card) => card.value === firstValue);
 }
 
-// Function to check if an array of cards forms a valid sequence
+// // Function to check if an array of cards forms a valid sequence
 function isValidSequence(cards) {
   const suitsSet = new Set(cards.map((card) => card.suit));
 
@@ -129,7 +140,7 @@ function isValidSequence(cards) {
   return true;
 }
 
-// Function to check if an array of cards forms a valid set
+// // Function to check if an array of cards forms a valid set
 function isValidSet(cards) {
   const ranksSet = new Set(cards.map((card) => card.value));
 
@@ -140,7 +151,17 @@ function isValidSet(cards) {
   return true;
 }
 
-// Function to draw a card for a player
+// // Function to draw a card for a player
+// function drawCard(player, deck) {
+//   if (deck.length > 0) {
+//     const card = deck.pop(); // Remove and get the last card from the deck
+//     if (!player.hand) {
+//       player.hand = []; // Initialize the player's hand as an empty array if it's undefined
+//     }
+//     player.hand.push(card); // Add the card to the player's hand
+//   }
+// }
+
 function drawCard(player, deck) {
   if (deck.length > 0) {
     const card = deck.pop(); // Remove and get the last card from the deck
@@ -148,19 +169,46 @@ function drawCard(player, deck) {
       player.hand = []; // Initialize the player's hand as an empty array if it's undefined
     }
     player.hand.push(card); // Add the card to the player's hand
+    return card; // Return the drawn card
   }
+  return null; // Return null if the deck is empty
+}
+
+// Define a player object and a deck array
+const player = { name: 'Alice' }; // Example player object
+const deck = [
+  { suit: 'Hearts', value: '2' },
+  { suit: 'Diamonds', value: '7' },
+  { suit: 'Clubs', value: 'King' },
+  // Add more cards to the deck as needed
+];
+
+// Call the drawCard function with the player and deck
+const drawnCard = drawCard(player, deck);
+
+if (drawnCard) {
+  // Card was drawn successfully
+  console.log('Drawn card:', drawnCard);
+  console.log('Player\'s hand:', player.hand);
+} else {
+  // Deck is empty
+  console.log('No cards left in the deck.');
 }
 
 
-// Function to discard a card from a player's hand
+
+// // Function to discard a card from a player's hand
 function discardCard(player, card, discardPile) {
   const index = player.hand.findIndex((c) => c === card);
   if (index !== -1) {
     player.hand.splice(index, 1); // Remove the card from the player's hand
     discardPile.push(card); // Add the discarded card to the discard pile
+    return true; // Return true to indicate a successful discard
   }
+  return false; // Return false to indicate that the card was not found in the player's hand
 }
-// Function to take a card from the discard pile
+
+// // Function to take a card from the discard pile
 function takeFromDiscardPile(playerName, playerHand, discardPile) {
   if (discardPile.length > 0) {
     const takenCard = discardPile.pop();
@@ -170,7 +218,7 @@ function takeFromDiscardPile(playerName, playerHand, discardPile) {
   return null;
 }
 
-// Function to display a player's hand
+// // Function to display a player's hand
 function displayHand(playerName, playerHand) {
   console.log(`${playerName}'s hand:`);
   for (const card of playerHand) {
@@ -178,17 +226,18 @@ function displayHand(playerName, playerHand) {
   }
 }
 
-// Function to check if an array of cards forms a valid meld
+ // Function to check if an array of cards forms a valid meld
+ //const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'Jack', 'Queen', 'King', 'Ace'];
 function isValidMeld(playerHand) {
   if (!playerHand || playerHand.length === 0) {
     return false; // Return false if the player's hand is undefined or empty
   }
 
-  // Helper function to sort cards by value
+   // Helper function to sort cards by value
   function sortByValue(cards) {
     return cards.slice().sort((a, b) => values.indexOf(a.value) - values.indexOf(b.value));
   }
-  // Helper function to check if cards form a valid sequence
+   // Helper function to check if cards form a valid sequence
   function checkForSequence(cards) {
     if (cards.length < 3) return false;
     cards = sortByValue(cards);
@@ -200,7 +249,7 @@ function isValidMeld(playerHand) {
     return true;
   }
 
-  // Helper function to check if cards form a valid set
+   // Helper function to check if cards form a valid set
   function checkForSet(cards) {
     if (cards.length < 3) return false;
     const firstValue = cards[0].value;
@@ -244,8 +293,19 @@ function isValidMeld(playerHand) {
 
   return false;
 }
+// Example usage
+const playerHand = [
+  { suit: 'Hearts', value: '3' },
+  { suit: 'Diamonds', value: '4' },
+  { suit: 'Clubs', value: '5' },
+  { suit: 'Spades', value: '5' },
+  { suit: 'Hearts', value: '5' },
+  { suit: 'Diamonds', value: '10' },
+];
 
-// Function to announce a meld
+console.log(isValidMeld(playerHand)); // Should return true
+
+ // Function to announce a meld
 function announceMeld(playerName) {
   const isValidMeldPlayer = isValidMeld(playerName.hand);
   if (isValidMeldPlayer) {
@@ -255,13 +315,13 @@ function announceMeld(playerName) {
   }
 }
 
-// Function to check if a player has won the game
+// // Function to check if a player has won the game
 function hasPlayerWon(playerName, playerHand) {
   return isValidMeld(playerHand) && playerHand.length === 0;
 }
 
-// Function to calculate the score of a player's hand
-function calculateScore(playerHand) {
+// // Function to calculate the score of a player's hand
+ function calculateScore(playerHand) {
   let score = 0;
 
   // Define scoring rules based on common Rummy rules
@@ -288,7 +348,7 @@ function calculateScore(playerHand) {
   return score;
 }
 
-// Player's Turn Logic
+// // Player's Turn Logic
 function playerTurn(playerName, playerHand, drawPile, discardPile) {
   console.log(`${playerName}'s turn:`);
 
@@ -360,18 +420,18 @@ if (winner) {
 module.exports = {
   createShuffledDeck,
   shuffleArray,
-  dealCards,
-  isSequence,
-  isSet,
-  isValidSequence,
-  isValidSet,
-  playerTurn,
-  drawCard,
-  discardCard,
-  takeFromDiscardPile,
-  displayHand,
-  isValidMeld,
-  announceMeld,
-  hasPlayerWon,
-  calculateScore,
+  // dealCards,
+  // isSequence,
+  // isSet,
+  // isValidSequence,
+  // isValidSet,
+  // playerTurn,
+  // drawCard,
+  // discardCard,
+  // takeFromDiscardPile,
+  // displayHand,
+  // isValidMeld,
+  // announceMeld,
+  // hasPlayerWon,
+  // calculateScore,
 };

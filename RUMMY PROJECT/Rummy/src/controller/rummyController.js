@@ -202,8 +202,8 @@ function initializeDeck() {
 
   return deck;
 }
-// const deck = initializeDeck();
-// console.log(deck);
+//  const deck = initializeDeck();
+//  console.log(deck);
 
 //Function to shuffle the deck using the Fisher-Yates shuffle algorithm
 function shuffleDeck(deck) {
@@ -220,6 +220,21 @@ function shuffleDeck(deck) {
 
 // shuffleDeck(deck);
 // console.log('Shuffled deck:', deck);
+
+// function shuffleArray(array) {
+//   for (let i = array.length - 1; i > 0; i--) {
+//     const j = Math.floor(Math.random() * (i + 1));
+//     [array[i], array[j]] = [array[j], array[i]];
+//   }
+//   return array;
+// }
+// const myArray = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+// // Shuffle the array
+// shuffleArray(myArray);
+
+// // Display the shuffled array
+// console.log(myArray);
 
 
 // Function to deal cards to players from the shuffled deck
@@ -257,34 +272,36 @@ function dealCards(players, deck) {
 
 
 
-function initializeGame(game) {
-  if (!game.players) {
-    game.players = []; // Initialize the players array if it's not defined
-  }
 
-  const deck = initializeDeck();
-  shuffleDeck(deck);
+// function isValidSequence(cards) {
+//   const suits = new Set(cards.map(card => card.split(' ')[2]));
 
-  // Ensure that each player has a 'hand' property
-  for (const player of game.players) {
-    player.hand = [];
-  }
+//   if (suits.size !== 1) {
+//     return false; // All cards must have the same suit for a sequence
+//   }
 
-  dealCards(game.players, deck);
+//   const values = cards.map(card => card.split(' ')[0]);
+//   const rankOrder = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'Jack', 'Queen', 'King', 'Ace'];
 
-  game.currentPlayerIndex = 0;
-  game.discardPile = [];
-  game.drawPile = deck;
-  game.gameEnded = false;
-}
+//   for (let i = 0; i < values.length - 1; i++) {
+//     const currentRankIndex = rankOrder.indexOf(values[i]);
+//     const nextRankIndex = rankOrder.indexOf(values[i + 1]);
+
+//     if (nextRankIndex !== currentRankIndex + 1) {
+//       return false; // Cards are not in consecutive order
+//     }
+//   }
+
+//   return true;
+// }
 function isValidSequence(cards) {
-  const suits = new Set(cards.map(card => card.split(' ')[2]));
+  const suits = new Set(cards.map(card => card.suit));
 
   if (suits.size !== 1) {
     return false; // All cards must have the same suit for a sequence
   }
 
-  const values = cards.map(card => card.split(' ')[0]);
+  const values = cards.map(card => card.value);
   const rankOrder = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'Jack', 'Queen', 'King', 'Ace'];
 
   for (let i = 0; i < values.length - 1; i++) {
@@ -298,6 +315,14 @@ function isValidSequence(cards) {
 
   return true;
 }
+// const cards = [
+//   { suit: 'Hearts', value: '2' },
+//   { suit: 'Hearts', value: '3' },
+//   { suit: 'Hearts', value: '4' },
+// ];
+
+// const isValid = isValidSequence(cards);
+// console.log('Is the sequence valid?', isValid);
 
 // Test the function with an example sequence
 // const cards = ['10 of Hearts', 'Jack of Hearts', 'Queen of Hearts', 'King of Hearts', 'Ace of Hearts'];
@@ -305,8 +330,17 @@ function isValidSequence(cards) {
 // console.log('Is the sequence valid?', result);
 
 
+// function isValidSet(cards) {
+//   const ranks = new Set(cards.map(card => card.split(' ')[0]));
+
+//   if (ranks.size !== 1) {
+//     return false; // All cards must have the same rank for a set
+//   }
+
+//   return true;
+// }
 function isValidSet(cards) {
-  const ranks = new Set(cards.map(card => card.split(' ')[0]));
+  const ranks = new Set(cards.map(card => card.value));
 
   if (ranks.size !== 1) {
     return false; // All cards must have the same rank for a set
@@ -314,31 +348,206 @@ function isValidSet(cards) {
 
   return true;
 }
+// const cards = [
+//   { suit: 'Hearts', value: '2' },
+//   { suit: 'Diamonds', value: '2' },
+//   { suit: 'Clubs', value: '2' },
+// ];
+
+// const isValid = isValidSet(cards);
+// console.log('Is the set valid?', isValid);
 // const cards = ['Ace of Hearts', 'Ace of Diamonds', 'Ace of Clubs'];
 // const result = isValidSet(cards);
 // console.log('Is the set valid?', result);
 
-function isValidMeld(cards) {
-  // Sort the cards by rank for easier comparison
-  cards.sort((a, b) => {
-    const rankOrder = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'Jack', 'Queen', 'King', 'Ace'];
-    return rankOrder.indexOf(a.split(' ')[0]) - rankOrder.indexOf(b.split(' ')[0]);
-  });
+function isSequence(cards) {
+  // Sort the cards by value
+  cards.sort((a, b) => values.indexOf(a.value) - values.indexOf(b.value));
 
-  // Check for a valid sequence
-  if (isValidSequence(cards)) {
-    return true;
+  // Check if the cards form a consecutive sequence
+  for (let i = 1; i < cards.length; i++) {
+    const prevValue = values.indexOf(cards[i - 1].value);
+    const currValue = values.indexOf(cards[i].value);
+    if (currValue !== prevValue + 1) {
+      return false;
+    }
   }
 
-  // Check for a valid set
-  if (isValidSet(cards)) {
-    return true;
-  }
+  return true;
+}
+// const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'Jack', 'Queen', 'King', 'Ace'];
+// const cards = [
+//   { value: '2' },
+//   { value: '3' },
+//   { value: '4' },
+//   { value: '5' },
+//   { value: '6' },
+// ];
 
-  return false;
+// // Call the isSequence function with the example array
+// const result = isSequence(cards);
+
+// // Display the result in the console
+// console.log(result);
+
+function isSet(cards) {
+  // Check if all the cards have the same rank (value)
+  const firstValue = cards[0].value;
+  return cards.every((card) => card.value === firstValue);
+}
+// const cards = [
+//   { value: '2' },
+//   { value: '2' },
+//   { value: '2' },
+//   { value: '2' },
+//   { value: '2' },
+// ];
+
+// // Call the isSet function with the example array
+// const result = isSet(cards);
+
+// // Display the result in the console
+// console.log(result);
+
+function drawCard(player, deck) {
+  if (deck.length > 0) {
+    const card = deck.pop(); // Remove and get the last card from the deck
+    if (!player.hand) {
+      player.hand = []; // Initialize the player's hand as an empty array if it's undefined
+    }
+    player.hand.push(card); // Add the card to the player's hand
+    return card; // Return the drawn card
+  }
+  return null; // Return null if the deck is empty
 }
 
-// Define isValidSequence and isValidSet functions here if not already defined
+// Define a player object and a deck array
+// const player = { name: 'Alice' }; // Example player object
+// const deck = [
+//   { suit: 'Hearts', value: '2' },
+//   { suit: 'Diamonds', value: '7' },
+//   { suit: 'Clubs', value: 'King' },
+//   // Add more cards to the deck as needed
+// ];
+
+// // Call the drawCard function with the player and deck
+// const drawnCard = drawCard(player, deck);
+
+// if (drawnCard) {
+//   // Card was drawn successfully
+//   console.log('Drawn card:', drawnCard);
+//   console.log('Player\'s hand:', player.hand);
+// } else {
+//   // Deck is empty
+//   console.log('No cards left in the deck.');
+// }
+
+function discardCard(player, card, discardPile) {
+  const index = player.hand.findIndex((c) => c.value === card.value && c.suit === card.suit);
+  if (index !== -1) {
+    player.hand.splice(index, 1); // Remove the card from the player's hand
+    discardPile.push(card); // Add the discarded card to the discard pile
+    return true; // Return true to indicate a successful discard
+  }
+  return false; // Return false to indicate that the card was not found in the player's hand
+}
+
+// Sample player with a hand of cards
+// const player = {
+//   hand: [{ value: '2', suit: 'Hearts' }, { value: '5', suit: 'Diamonds' }, { value: '8', suit: 'Clubs' }],
+// };
+
+// // Sample discard pile
+// const discardPile = [];
+
+// // Card to discard
+// const cardToDiscard = { value: '5', suit: 'Diamonds' };
+
+// // Run the discardCard function
+// const result = discardCard(player, cardToDiscard, discardPile);
+
+// if (result) {
+//   console.log('Card successfully discarded.');
+//   console.log('Player\'s hand:', player.hand);
+//   console.log('Discard pile:', discardPile);
+// } else {
+//   console.log('Card not found in the player\'s hand.');
+// }
+
+function takeFromDiscardPile(playerName, playerHand, discardPile) {
+  if (discardPile.length > 0) {
+    const takenCard = discardPile.pop();
+    playerHand.push(takenCard);
+    return takenCard;
+  }
+  return null;
+}
+
+// Sample player name, player hand, and discard pile
+// const playerName = "Player 1";
+// const playerHand = [];
+// const discardPile = [
+//   { value: '2', suit: 'Hearts' },
+//   { value: '5', suit: 'Diamonds' },
+//   { value: '8', suit: 'Clubs' },
+// ];
+
+// // Run the takeFromDiscardPile function
+// const takenCard = takeFromDiscardPile(playerName, playerHand, discardPile);
+
+// if (takenCard) {
+//   console.log(playerName + ' took a card from the discard pile.');
+//   console.log(playerName + '\'s hand:', playerHand);
+//   console.log('Updated discard pile:', discardPile);
+// } else {
+//   console.log('The discard pile is empty. Cannot take a card.');
+// }
+
+function displayHand(playerName, playerHand) {
+  console.log(`${playerName}'s hand:`);
+  for (const card of playerHand) {
+    console.log(`${card.suit} ${card.value}`);
+  }
+}
+
+// Sample player name and hand
+// const playerName = "Player 1";
+// const playerHand = [
+//   { suit: 'Hearts', value: '2' },
+//   { suit: 'Diamonds', value: '5' },
+//   { suit: 'Clubs', value: '8' },
+// ];
+
+// // Display the player's hand in the console
+// displayHand(playerName, playerHand);
+
+
+
+
+
+
+
+// function isValidMeld(cards) {
+//   // Sort the cards by rank for easier comparison
+//   cards.sort((a, b) => {
+//     const rankOrder = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'Jack', 'Queen', 'King', 'Ace'];
+//     return rankOrder.indexOf(a.split(' ')[0]) - rankOrder.indexOf(b.split(' ')[0]);
+//   });
+
+//   // Check for a valid sequence
+//   if (isValidSequence(cards)) {
+//     return true;
+//   }
+
+//   // Check for a valid set
+//   if (isValidSet(cards)) {
+//     return true;
+//   }
+
+//   return false;
+// }
+
+// //Define isValidSequence and isValidSet functions here if not already defined
 
 // const cards = [
 //   '2 of Hearts', '3 of Hearts', '4 of Hearts', '5 of Hearts', '6 of Hearts',
@@ -346,6 +555,291 @@ function isValidMeld(cards) {
 
 // const result = isValidMeld(cards);
 // console.log('Is the meld valid?', result);
+
+// function isValidMeld(cards) {
+//   // Sort the cards by rank using the custom rank order
+//   const rankOrder = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'Jack', 'Queen', 'King', 'Ace'];
+//   cards.sort((a, b) => rankOrder.indexOf(a.value) - rankOrder.indexOf(b.value));
+
+//   // Helper function to check if an array of cards is a valid sequence
+//   function isSequence(cards) {
+//     for (let i = 1; i < cards.length; i++) {
+//       if (rankOrder.indexOf(cards[i].value) !== rankOrder.indexOf(cards[i - 1].value) + 1) {
+//         return false;
+//       }
+//     }
+//     return true;
+//   }
+
+//   // Helper function to check if an array of cards is a valid set
+//   function isSet(cards) {
+//     for (let i = 1; i < cards.length; i++) {
+//       if (rankOrder.indexOf(cards[i].value) !== rankOrder.indexOf(cards[0].value)) {
+//         return false;
+//       }
+//     }
+//     return true;
+//   }
+
+//   // Check for valid sequences and sets
+//   if (isSequence(cards) || isSet(cards)) {
+//     return true;
+//   }
+
+//   return false;
+// }
+
+// const sampleCards = [
+//   { suit: 'Hearts', value: '3' },
+//   { suit: 'Diamonds', value: '4' },
+//   { suit: 'Clubs', value: '5' }
+//   // Add more cards to the array as needed
+// ];
+
+// console.log(isValidMeld(sampleCards));
+ // Should return true if it's a valid meld
+ function isValidMeld(cards) {
+  const rankOrder = [
+    '2', '3', '4', '5', '6', '7', '8', '9', '10', 'Jack', 'Queen', 'King', 'Ace'
+  ];
+
+  if (!Array.isArray(cards) || cards.length < 3) {
+    return false; // A meld should have at least 3 cards
+  }
+
+  const ranks = new Set(cards.map((card) => card.value));
+
+  if (ranks.size === 1) {
+    // If there is only one unique rank, it's a valid set
+    return true;
+  }
+
+  const sortedRanks = Array.from(ranks).sort((a, b) =>
+    rankOrder.indexOf(a) - rankOrder.indexOf(b)
+  );
+
+  if (sortedRanks.length < 3) {
+    return false; // Not enough unique ranks for a valid sequence
+  }
+
+  // Check for a valid sequence
+  for (let i = 1; i < sortedRanks.length; i++) {
+    if (rankOrder.indexOf(sortedRanks[i]) !== rankOrder.indexOf(sortedRanks[i - 1]) + 1) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+const sampleCards = [
+  { suit: 'Hearts', value: '3' },
+  { suit: 'Diamonds', value: '4' },
+  { suit: 'Clubs', value: '5' },
+  { suit: 'Spades', value: '6' },
+  { suit: 'Hearts', value: '7' },
+];
+
+console.log(isValidMeld(sampleCards)); // This should return true
+ // This should return true
+
+
+
+
+// const valueToNumber = {
+//   '2': 2,
+//   '3': 3,
+//   '4': 4,
+//   '5': 5,
+//   '6': 6,
+//   '7': 7,
+//   '8': 8,
+//   '9': 9,
+//   '10': 10,
+//   'Jack': 11,
+//   'Queen': 12,
+//   'King': 13,
+//   'Ace': 14,
+// };
+
+// function isValidMeld(playerHand) {
+//   if (!playerHand || playerHand.length === 0) {
+//     return false; // Return false if the player's hand is undefined or empty
+//   }
+  
+//   // Helper function to sort cards by value
+//   function sortByValue(cards) {
+//     return cards.slice().sort((a, b) => valueToNumber[a.value] - valueToNumber[b.value]);
+//   }
+
+//   // Helper function to check if cards form a valid sequence
+//   function checkForSequence(cards) {
+//     if (cards.length < 3) return false;
+//     cards = sortByValue(cards);
+
+//     for (let i = 1; i < cards.length; i++) {
+//       if (valueToNumber[cards[i].value] - valueToNumber[cards[i - 1].value] !== 1) {
+//         return false;
+//       }
+//     }
+
+//     return true;
+//   }
+
+//   // Helper function to check if cards form a valid set
+//   function checkForSet(cards) {
+//     if (cards.length < 3) return false;
+//     return cards.every((card) => card.value === cards[0].value);
+//   }
+
+//   const sequences = [];
+//   const sets = [];
+
+//   // Find and group sequences and sets in the player's hand
+//   const sortedHand = sortByValue(playerHand);
+
+//   let currentGroup = [sortedHand[0]];
+
+//   for (let i = 1; i < sortedHand.length; i++) {
+//     if (valueToNumber[sortedHand[i].value] === valueToNumber[sortedHand[i - 1].value]) {
+//       currentGroup.push(sortedHand[i]);
+//     } else {
+//       if (currentGroup.length >= 3) {
+//         if (checkForSequence(currentGroup)) {
+//           sequences.push(...currentGroup);
+//         } else if (checkForSet(currentGroup)) {
+//           sets.push(...currentGroup);
+//         }
+//       }
+//       currentGroup = [sortedHand[i]];
+//     }
+//   }
+
+//   if (currentGroup.length >= 3) {
+//     if (checkForSequence(currentGroup) || checkForSet(currentGroup)) {
+//       // Allow the last group to be a sequence or a set
+//       sequences.push(...currentGroup);
+//     }
+//   }
+
+//   // If there are valid sequences and sets that cover the entire hand, it's a valid meld
+//   if (sequences.length + sets.length === sortedHand.length) {
+//     return true;
+//   }
+
+//   return false;
+// }
+
+// Example usage
+// const playerHand = [
+//   { suit: 'Hearts', value: '3' },
+//   { suit: 'Diamonds', value: '4' },
+//   { suit: 'Clubs', value: '5' },
+//   { suit: 'Spades', value: '5' },
+//   { suit: 'Hearts', value: '5' },
+//   { suit: 'Diamonds', value: '5' },
+// ];
+
+// console.log(isValidMeld(playerHand)); // Should return true
+
+
+//  function announceMeld(player) {
+//   const isValidMeldPlayer = isValidMeld(player.hand);
+//   if (isValidMeldPlayer) {
+//     console.log(`${player.name}'s meld is valid!`);
+//   } else {
+//     console.log(`${player.name}'s meld is not valid.`);
+//   }
+// }
+
+// // Example usage
+// const player = {
+//   name: 'Alice',
+//   hand: [
+//     { suit: 'Hearts', value: '3' },
+//     { suit: 'Diamonds', value: '4' },
+//     { suit: 'Clubs', value: '5' },
+//     { suit: 'Spades', value: '5' },
+//     { suit: 'Hearts', value: '5' },
+//     { suit: 'Diamonds', value: '5' }
+//   ]
+// };
+
+// announceMeld(player);
+// function announceMeld(cards, playerName) {
+//   const isValidMeldPlayer = isValidMeld(cards);
+//   if (isValidMeldPlayer) {
+//     console.log(`${playerName}'s meld is valid!`);
+//   } else {
+//     console.log(`${playerName}'s meld is not valid.`);
+//   }
+// }
+
+// // Example usage
+// const player = {
+//   name: 'Alice',
+//   cards: [
+//     { suit: 'Hearts', value: '3' },
+//     { suit: 'Diamonds', value: '4' },
+//     { suit: 'Clubs', value: '5' },
+//     { suit: 'Spades', value: '5' },
+//     { suit: 'Hearts', value: '5' },
+//     { suit: 'Diamonds', value: '5' }
+//   ]
+// };
+
+// announceMeld(player.cards, player.name);
+function announceMeld(player) {
+  const isValidMeldPlayer = isValidMeld(player.hand);
+  if (isValidMeldPlayer) {
+    console.log(`${player.name}'s meld is valid!`);
+  } else {
+    console.log(`${player.name}'s meld is not valid.`);
+  }
+}
+
+// Example usage
+const player = {
+  name: 'Alice',
+  hand: [
+    { suit: 'Hearts', value: '3' },
+    { suit: 'Diamonds', value: '4' },
+    { suit: 'Clubs', value: '5' },
+    { suit: 'Spades', value: '5' },
+    { suit: 'Hearts', value: '5' },
+    { suit: 'Diamonds', value: '5' }
+  ]
+};
+
+announceMeld(player);
+
+// Include the isValidMeld function here (either define it or import it)
+
+function hasPlayerWon(playerName, playerHand) {
+  // Call the isValidMeld function to check if the player's hand is a valid meld
+  // and check if the player's hand is empty
+  return isValidMeld(playerHand) && playerHand.length === 0;
+}
+
+// Sample player hand
+const samplePlayerHand = [
+  { suit: 'Hearts', value: '3' },
+  { suit: 'Diamonds', value: '4' },
+  { suit: 'Clubs', value: '5' },
+  // Add more cards to the array as needed
+];
+
+// Call the hasPlayerWon function with the player's name and their hand
+const playerName = 'Alice';
+const playerWon = hasPlayerWon(playerName, samplePlayerHand);
+
+if (playerWon) {
+  console.log(`${playerName} has won the game!`);
+} else {
+  console.log(`${playerName} has not won yet.`);
+}
+
+
 
 
 
