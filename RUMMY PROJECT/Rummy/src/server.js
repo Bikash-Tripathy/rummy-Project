@@ -7,15 +7,15 @@
 //   const server = http.createServer(app);
 //   const io = socketIo(server);
 
-//   app.use(express.static(__dirname + '/public')); // Serve static files from 'public' directory
+//   //app.use(express.static(__dirname + '/public')); // Serve static files from 'public' directory
 
 //   io.on('connection', (socket) => {
 //     console.log('A user connected');
 
 //     // Handle socket events here
-//     socket.on('chat message', (msg) => {
-//       io.emit('chat message', msg); // Broadcast the message to all connected clients
-//     });
+//     // socket.on('chat message', (msg) => {
+//     //   io.emit('chat message', msg); // Broadcast the message to all connected clients
+//     // });
 
 //     socket.on('disconnect', () => {
 //       console.log('A user disconnected');

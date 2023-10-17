@@ -20,7 +20,7 @@ const rummyGameSchema = new mongoose.Schema({
   },
   selectedPlayersRange: {
     type: Number,
-    enum: [2, 6], // Only allow 2 and 6 as valid values
+    enum: [2, 5], // Only allow 2 and 6 as valid values
     required: true,
   },
   players: [ {
