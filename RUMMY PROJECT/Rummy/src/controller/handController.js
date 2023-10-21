@@ -349,72 +349,72 @@ function hasPlayerWon(playerName, playerHand) {
 }
 
 // // Player's Turn Logic
-function playerTurn(playerName, playerHand, drawPile, discardPile) {
-  console.log(`${playerName}'s turn:`);
+// function playerTurn(playerName, playerHand, drawPile, discardPile) {
+//   console.log(`${playerName}'s turn:`);
 
-  // Draw a card
-  const drawnCard = drawCard(playerHand, drawPile);
-  if (drawnCard) {
-    console.log(`${playerName} draws: ${drawnCard.suit} ${drawnCard.value}`);
-    displayHand(playerName, playerHand);
+//   // Draw a card
+//   const drawnCard = drawCard(playerHand, drawPile);
+//   if (drawnCard) {
+//     console.log(`${playerName} draws: ${drawnCard.suit} ${drawnCard.value}`);
+//     displayHand(playerName, playerHand);
 
-    // Discard a card
-    const cardToDiscard = playerHand[Math.floor(Math.random() * playerHand.length)];
-    discardCard(playerHand, cardToDiscard, discardPile);
-    console.log(`${playerName} discards: ${cardToDiscard.suit} ${cardToDiscard.value}`);
-    displayHand(playerName, playerHand);
+//     // Discard a card
+//     const cardToDiscard = playerHand[Math.floor(Math.random() * playerHand.length)];
+//     discardCard(playerHand, cardToDiscard, discardPile);
+//     console.log(`${playerName} discards: ${cardToDiscard.suit} ${cardToDiscard.value}`);
+//     displayHand(playerName, playerHand);
 
-    // Player can also choose to take a card from the discard pile
-    if (Math.random() < 0.5) {
-      const takenCard = takeFromDiscardPile(playerName, playerHand, discardPile);
-      if (takenCard) {
-        console.log(`${playerName} takes: ${takenCard.suit} ${takenCard.value} from the discard pile.`);
-        displayHand(playerName, playerHand);
-      }
-    }
+//     // Player can also choose to take a card from the discard pile
+//     if (Math.random() < 0.5) {
+//       const takenCard = takeFromDiscardPile(playerName, playerHand, discardPile);
+//       if (takenCard) {
+//         console.log(`${playerName} takes: ${takenCard.suit} ${takenCard.value} from the discard pile.`);
+//         displayHand(playerName, playerHand);
+//       }
+//     }
 
-    // Check if the player has a valid meld
-    const isValidMeldPlayer = isValidMeld(playerHand);
-    console.log(`${playerName} has a valid meld: ${isValidMeldPlayer ? 'Yes' : 'No'}`);
-  }
-}
+//     // Check if the player has a valid meld
+//     const isValidMeldPlayer = isValidMeld(playerHand);
+//     console.log(`${playerName} has a valid meld: ${isValidMeldPlayer ? 'Yes' : 'No'}`);
+//   }
+// }
 
-// Example of a game with two players taking turns
-const player1Hand = [];
-const player2Hand = [];
-const drawPile = createShuffledDeck();
-const discardPile = [];
+// // Example of a game with two players taking turns
+// const player1Hand = [];
+// const player2Hand = [];
+// const drawPile = createShuffledDeck();
+// const discardPile = [];
 
-dealCards([{ name: 'Player 1', hand: player1Hand }, { name: 'Player 2', hand: player2Hand }], drawPile);
+// dealCards([{ name: 'Player 1', hand: player1Hand }, { name: 'Player 2', hand: player2Hand }], drawPile);
 
-let winner = null;
+// let winner = null;
 
-while (drawPile.length > 0) {
-  // Player 1's turn
-  playerTurn('Player 1', player1Hand, drawPile, discardPile);
-  announceMeld('Player 1');
+// while (drawPile.length > 0) {
+//   // Player 1's turn
+//   playerTurn('Player 1', player1Hand, drawPile, discardPile);
+//   announceMeld('Player 1');
 
-  if (hasPlayerWon('Player 1', player1Hand)) {
-    winner = 'Player 1';
-    break; // Player 1 has won, so exit the loop
-  }
+//   if (hasPlayerWon('Player 1', player1Hand)) {
+//     winner = 'Player 1';
+//     break; // Player 1 has won, so exit the loop
+//   }
 
-  // Player 2's turn
-  playerTurn('Player 2', player2Hand, drawPile, discardPile);
-  announceMeld('Player 2');
+//   // Player 2's turn
+//   playerTurn('Player 2', player2Hand, drawPile, discardPile);
+//   announceMeld('Player 2');
 
-  if (hasPlayerWon('Player 2', player2Hand)) {
-    winner = 'Player 2';
-    break; // Player 2 has won, so exit the loop
-  }
-}
+//   if (hasPlayerWon('Player 2', player2Hand)) {
+//     winner = 'Player 2';
+//     break; // Player 2 has won, so exit the loop
+//   }
+// }
 
-if (winner) {
-  console.log(`${winner} has won the game!`);
-  console.log(`Final Score - Player 1: ${calculateScore(player1Hand)}, Player 2: ${calculateScore(player2Hand)}`);
-} else {
-  console.log('It\'s a draw!');
-}
+// if (winner) {
+//   console.log(`${winner} has won the game!`);
+//   console.log(`Final Score - Player 1: ${calculateScore(player1Hand)}, Player 2: ${calculateScore(player2Hand)}`);
+// } else {
+//   console.log('It\'s a draw!');
+// }
 
 // Export the necessary functions
 module.exports = {

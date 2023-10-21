@@ -74,14 +74,18 @@ const gameRoute = require("./route/gameRoutes");
 const lobbyRoute = require("./route/lobbyRoutes");
 const rummyRoutes = require('./route/rummyRoutes');
 const userRoutes = require('./route/userRoutes');
+//const rummyController = require('./controller/rummyController');
+const initializeSocket = require('./socket/socket');
+const { initializeDeck, shuffleDeck, dealCards, drawCard, discardCard, takeFromDiscardPile, displayHand, isValidSequence, isValidSet, isValidMeld } = require('./utils/util');
+
 const http = require('http');
-const socketIo = require('socket.io');
+//const socketIo = require('socket.io');
 const cors = require("cors");
 
 
 const app = express();
 const server = http.createServer(app);
-const io = socketIo(server);
+//const io = socketIo(server);
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -91,20 +95,9 @@ mongoose.connect("mongodb+srv://BIKASH:2NQSqnkWjFq2TWNe@cluster0.bbmcbft.mongodb
   .then(() => console.log("MongoDB is connected"))
   .catch((err) => console.log(err.message));
 
-io.on('connection', (socket) => {
-  console.log('A user connected');
+  initializeSocket(server);
 
-  // Handle custom events
-  socket.on('message', (data) => {
-    console.log('Received message:', data);
-    // Broadcast the message to all connected clients
-    io.emit('message', data);
-  });
-
-  socket.on('disconnect', () => {
-    console.log('A user disconnected');
-  });
-});
+  
 
 app.use("/", route);
 app.use("/", pokerRoute);
