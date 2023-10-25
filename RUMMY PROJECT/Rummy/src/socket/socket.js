@@ -30,10 +30,14 @@ function initializeSocket(server) {
       socket.emit('shuffledDeck', deck);
     });
 
+    // socket.on('dealCards', (players, deck) => {
+    //   dealCards(players, deck);
+    //   socket.emit('dealtCards', players);
+    // });
     socket.on('dealCards', (players, deck) => {
-      dealCards(players, deck);
-      socket.emit('dealtCards', players);
-    });
+        dealCards(players, deck);
+        socket.emit('dealtCards', players);
+      });
 
     socket.on('drawCard', (playerHand, drawPile) => {
       const drawnCard = drawCard(playerHand, drawPile);

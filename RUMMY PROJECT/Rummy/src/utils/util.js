@@ -393,28 +393,67 @@ console.log('Shuffled deck:', decks);
 
 
 //---------------- Function to deal cards to players from the shuffled deck-----------------------
-function dealCards(players, deck) {
-  shuffleDeck(deck);
-  let currentPlayerIndex = 0;
+// function dealCards(players, deck) {
+//   shuffleDeck(deck);
+//   let currentPlayerIndex = 0;
 
-  for (const card of deck) {
-    const currentPlayer = players[currentPlayerIndex];
-    currentPlayer.hand.push(card);
-    currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+//   for (const card of deck) {
+//     const currentPlayer = players[currentPlayerIndex];
+//     currentPlayer.hand.push(card);
+//     currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+//   }
+// }
+// const players = [
+//   { name: "Rakesh", hand: [] },
+//   { name: "Rajesh", hand: [] },
+// ];
+
+// const deck2 = [
+//   'Card 1', 'Card 2', 'Card 3', 'Card 4', 'Card 5',
+//   'Card 6', 'Card 7', 'Card 8', 'Card 9', 'Card 10',
+// ];
+
+// dealCards(players, deck2);
+// console.log(players);
+
+// Function to deal Rummy cards
+function dealCards(players, deck) {
+  // Shuffle the deck before dealing
+  shuffleDeck(deck);
+
+  const numPlayers = players.length;
+  const numCardsPerPlayer = numPlayers === 2 ? 10 : 7;
+
+  // Initialize draw pile with the remaining cards  in face-down the cards
+  const drawPile = deck.slice(numCardsPerPlayer * numPlayers);
+  console.log("drawPile");
+
+  // Deal cards to each player
+  for (let i = 0; i < numCardsPerPlayer; i++) {
+    for (let j = 0; j < numPlayers; j++) {
+      players[j].hand.push(deck[i + numCardsPerPlayer * j]);
+    }
   }
+
+  return drawPile;
 }
+
 const players = [
-  { name: "Rakesh", hand: [] },
-  { name: "Rajesh", hand: [] },
+  { name: 'Rakesh', hand: [] },
+  { name: 'Rajesh', hand: [] },
 ];
 
-const deck2 = [
+const deck3 = [
   'Card 1', 'Card 2', 'Card 3', 'Card 4', 'Card 5',
   'Card 6', 'Card 7', 'Card 8', 'Card 9', 'Card 10',
+  'Card 11', 'Card 12', 'Card 13', 'Card 14', 'Card 15',
+  'Card 16', 'Card 17', 'Card 18', 'Card 19', 'Card 20',
 ];
 
-dealCards(players, deck2);
-console.log(players);
+const drawPile = dealCards(players, deck3);
+
+console.log('Players:', players);
+console.log('Draw Pile:', drawPile);
 
 //----------------------- Function to draw a card from the draw pile--------------------------------
 function drawCard(playerHand, drawPile) {
