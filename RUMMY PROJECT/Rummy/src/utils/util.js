@@ -688,31 +688,31 @@ if (isValidSet(playerHand4)) {
 //--------------------------------------------- isValidMeld ---------------------------------------------
 
 // function isValidMeld(cards) {
+//   const isSequence = isValidSequence(cards);
+//   const isSet = isValidSet(cards);
+  
+//   if (isSequence || isSet) {
+//     return true;
+//   } else {
+//     return false;
+//   }
+// }
+
+// function isValidMeld(cards) {
 //   return isValidSequence(cards) || isValidSet(cards);
 // }
 
-function isValidMeld(cards) {
-  const isSequence = isValidSequence(cards);
-  const isSet = isValidSet(cards);
-  
-  if (isSequence || isSet) {
-    return true;
-  } else {
-    return false;
-  }
-}
+// const cards = [
+//   { suit: 'Hearts', value: '2' },
+//   { suit: 'Diamonds', value: '2' },
+//   { suit: 'Clubs', value: '2' },
+// ];
 
-const cards = [
-  { suit: 'Hearts', value: '2' },
-  { suit: 'Diamonds', value: '2' },
-  { suit: 'Clubs', value: '2' },
-];
-
-if (isValidMeld(cards)) {
-  console.log("Valid Meld!");
-} else {
-  console.log("Not a valid Meld.");
-}
+// if (isValidMeld(cards)) {
+//   console.log("Valid Meld!");
+// } else {
+//   console.log("Not a valid Meld.");
+// }
 
 
 //----------------------------------------------- calculateCardScore ------------------------------------
@@ -808,39 +808,39 @@ console.log(`Total Score: ${totalScore}`);
 //   console.log("Player does not have a winning hand.");
 // }
 
+// Define your isValidSequence and isValidSet functions as discussed earlier
+
 function checkWinning(player) {
-  const allMelds = [];
+  const hand = [...player.hand];
 
-  function findValidMelds(hand, currentMeld) {
-    if (isValidMeld(currentMeld)) {
-      allMelds.push([...currentMeld]);
-    }
+  function hasValidMeld(cards) {
+    return isValidSequence(cards) || isValidSet(cards);
+  }
 
-    if (hand.length === 0) {
-      return;
-    }
+  // Sort the hand to make it easier to check for sequences
+  hand.sort((a, b) => values.indexOf(a.value) - values.indexOf(b.value));
 
-    for (let i = 0; i < hand.length; i++) {
-      const card = hand[i];
-      // Try adding the card to the current meld
-      currentMeld.push(card);
-      const remainingHand = [...hand.slice(0, i), ...hand.slice(i + 1)];
+  // Try to find sequences
+  for (let i = 0; i < hand.length - 2; i++) {
+    const currentCard = hand[i];
+    const nextCard1 = hand[i + 1];
+    const nextCard2 = hand[i + 2];
 
-      // Recursively find valid melds with the remaining cards
-      findValidMelds(remainingHand, currentMeld);
-
-      // Remove the last added card to explore other combinations
-      currentMeld.pop();
+    if (hasValidMeld([currentCard, nextCard1, nextCard2])) {
+      return true;
     }
   }
 
-  findValidMelds(player.hand, []);
+  // Try to find sets
+  for (let i = 0; i < hand.length - 2; i++) {
+    const currentCard = hand[i];
+    const nextCard1 = hand[i + 1];
+    const nextCard2 = hand[i + 2];
 
-  // Check if all player cards are part of a valid meld
-  const allPlayerCards = new Set(player.hand);
-  for (const meld of allMelds) {
-    const meldSet = new Set(meld);
-    if (meldSet.size === allPlayerCards.size) {
+    if (
+      currentCard.value === nextCard1.value &&
+      currentCard.value === nextCard2.value
+    ) {
       return true;
     }
   }
@@ -848,6 +848,7 @@ function checkWinning(player) {
   return false;
 }
 
+// Usage
 const player = {
   hand: [
     { suit: 'Hearts', value: '2' },
@@ -873,11 +874,11 @@ if (isWinner) {
 
 //------------------------------------------ simulatePlayerTurn ----------------------------------------
 
-function simulatePlayerTurn(player, drawPile, faceDownPile) {
+function simulatePlayerTurn(player, drawPile, faceDownPile, players1) {
   console.log(`It's ${player.name}'s turn`);
   displayHand(player.hand);
 
-  if (checkWinning(player)) {
+  if (checkWinning(player, players1)) {
     console.log(`${player.name} has won the game!`);
     return true;
   }
@@ -898,6 +899,34 @@ function simulatePlayerTurn(player, drawPile, faceDownPile) {
 
   return false;
 }
+
+// Define your game state, including players and piles
+const player1 = { name: 'Player 1', hand: [] };
+const player2 = { name: 'Player 2', hand: [] };
+const players1 = [player1, player2];
+
+const drawPile1 = [
+  { suit: 'Hearts', value: '6' },
+  { suit: 'Diamonds', value: '8' },
+  { suit: 'Spades', value: '10' },
+  // Add more cards as needed
+];
+
+const faceDownPile1 = [
+  { suit: 'Hearts', value: '4' },
+  { suit: 'Clubs', value: 'King' },
+  { suit: 'Spades', value: '3' },
+  // Add more cards as needed
+];
+
+// Simulate the turn for Player 1
+console.log("Simulating Player 1's turn:");
+simulatePlayerTurn(player1, drawPile, faceDownPile, players1);
+
+// Simulate the turn for Player 2
+console.log("Simulating Player 2's turn:");
+simulatePlayerTurn(player2, drawPile1, faceDownPile1,players1 );
+
 
 //----------------------------------------- startGameWithPlayers -----------------------------------------
 
@@ -1086,7 +1115,7 @@ module.exports = {
   displayHand,
   isValidSequence,
   isValidSet,
-  isValidMeld,
+  //isValidMeld,
   calculateCardScore,
   calculateHandScore,
   checkWinning,
