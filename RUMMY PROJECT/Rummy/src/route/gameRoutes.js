@@ -1,14 +1,19 @@
 const express = require('express');
 const router = express.Router();
-const gameController = require('../controller/gameController');
+const GameController = require('../controller/pokerGameController');
+
+// Get the list of games
+router.get('/games', GameController.getGames);
 
 // Create a new game
-router.post('/', gameController.createGame);
+router.post('/games', GameController.createGame);
 
-// Get game details by ID
-router.get('/:id', gameController.getGameDetails);
+// Get the details of a specific game by ID
+router.get('/games/:gameId', GameController.getGameById);
 
-// Add a player to the game
-router.post('/:id/add-player', gameController.addPlayerToGame);
+// Join a game in a specific country
+router.post('/joins', GameController.joinGame);
+
+router.post('/exitPlayer',GameController.exitGame );
 
 module.exports = router;

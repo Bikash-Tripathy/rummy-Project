@@ -106,7 +106,7 @@ app.use("/", pokerHistoryRoute);
 app.use("/", rummyDealRoute);
 app.use("/", playerRoute);
 //app.use("/", handRoute);
-app.use("/", gameRoute);
+app.use("/bikash", gameRoute);
 app.use("/", lobbyRoute);
 app.use("/rakesh", rummyRoutes);
 app.use('/users', userRoutes);
