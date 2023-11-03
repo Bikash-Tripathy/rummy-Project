@@ -1189,90 +1189,37 @@ console.log(`Total Score: ${totalScore}`);
 
 //------------------------------------------ checkWinning -----------------------------------------------
 
-// function checkWinning(player) {
-//   const allMelds = [];
-
-//   function findAllMelds(hand, currentMeld) {
-//     if (isValidMeld(currentMeld)) {
-//       allMelds.push([...currentMeld]);
-//     }
-//     for (let i = 0; i < hand.length; i++) {
-//       const card = hand[i];
-//       currentMeld.push(card);
-//       const remainingHand = [...hand.slice(0, i), ...hand.slice(i + 1)];
-//       findAllMelds(remainingHand, currentMeld);
-//       currentMeld.pop();
-//     }
-//   }
-
-//   findAllMelds(player.hand, []);
-
-//   const allPlayerCards = new Set(player.hand);
-//   for (const meld of allMelds) {
-//     const meldSet = new Set(meld);
-//     if (meldSet.size === allPlayerCards.size) {
-//       return true;
-//     }
-//   }
-
-//   return false;
-// }
-
-// const player = {
-//   hand: [
-//     { suit: 'Hearts', value: '2' },
-//     { suit: 'Hearts', value: '3' },
-//     { suit: 'Hearts', value: '4' },
-//     { suit: 'Diamonds', value: '10' },
-//     { suit: 'Diamonds', value: 'Jack' },
-//     { suit: 'Diamonds', value: 'Queen' },
-//     { suit: 'Diamonds', value: 'King' },
-//     { suit: 'Diamonds', value: 'Ace' },
-//     // Add more cards as needed
-//   ],
-// };
-
-// const isWinner = checkWinning(player);
-
-// if (isWinner) {
-//   console.log("Player has a winning hand!");
-// } else {
-//   console.log("Player does not have a winning hand.");
-// }
-
 function checkWinning(player) {
-  const allMelds = [];
+  const hand = [...player.hand];
 
-  function findValidMelds(hand, currentMeld) {
-    if (isValidMeld(currentMeld)) {
-      allMelds.push([...currentMeld]);
-    }
+  function hasValidMeld(cards) {
+    return isValidSequence(cards) || isValidSet(cards);
+  }
 
-    if (hand.length === 0) {
-      return;
-    }
+  // Sort the hand to make it easier to check for sequences
+  hand.sort((a, b) => values.indexOf(a.value) - values.indexOf(b.value));
 
-    for (let i = 0; i < hand.length; i++) {
-      const card = hand[i];
-      // Try adding the card to the current meld
-      currentMeld.push(card);
-      const remainingHand = [...hand.slice(0, i), ...hand.slice(i + 1)];
+  // Try to find sequences
+  for (let i = 0; i < hand.length - 2; i++) {
+    const currentCard = hand[i];
+    const nextCard1 = hand[i + 1];
+    const nextCard2 = hand[i + 2];
 
-      // Recursively find valid melds with the remaining cards
-      findValidMelds(remainingHand, currentMeld);
-
-      // Remove the last added card to explore other combinations
-      currentMeld.pop();
+    if (hasValidMeld([currentCard, nextCard1, nextCard2])) {
+      return true;
     }
   }
 
-  findValidMelds(player.hand, []);
+  // Try to find sets
+  for (let i = 0; i < hand.length - 2; i++) {
+    const currentCard = hand[i];
+    const nextCard1 = hand[i + 1];
+    const nextCard2 = hand[i + 2];
 
-  // Check if all player cards are part of a valid meld
-  const allPlayerCards = new Set(player.hand);
-  for (const meld of allMelds) {
-    const meldSet = new Set(meld);
-    if (meldSet.size === allPlayerCards.size) {
+    if (
+      currentCard.value === nextCard1.value &&
+      currentCard.value === nextCard2.value
+    ) {
       return true;
     }
   }
@@ -1280,6 +1227,7 @@ function checkWinning(player) {
   return false;
 }
 
+// Usage
 const player = {
   hand: [
     { suit: 'Hearts', value: '2' },
@@ -1305,31 +1253,168 @@ if (isWinner) {
 
 //------------------------------------------ simulatePlayerTurn ----------------------------------------
 
-function simulatePlayerTurn(player, drawPile, faceDownPile) {
-  console.log(`It's ${player.name}'s turn`);
-  displayHand(player.hand);
+// function simulatePlayerTurn(totalPlayers, drawPile4, faceDownPile4) {
+//   console.log(`It's ${totalPlayers.name}'s turn`);
+//   displayHand(totalPlayers.hand);
 
-  if (checkWinning(player)) {
-    console.log(`${player.name} has won the game!`);
-    return true;
+//   if (checkWinning(totalPlayers)) {
+//     console.log(`${totalPlayers.name} has won the game!`);
+//     return true;
+//   }
+
+//   let turnEnded = false;
+//   let timeoutTriggered = false;
+
+//   // Set a 5-second timeout for the player's turn
+//   const turnTimeout = 5000; // 5 seconds in milliseconds
+//   const timer = setTimeout(() => {
+//     timeoutTriggered = true;
+//     console.log(`${totalPlayers.name} took too long! Turn ended.`);
+//     // Handle the case when the player's turn times out, e.g., deduct points or skip the turn
+//     turnEnded = true;
+//   }, turnTimeout);
+
+//   const drawnCard = drawCard(totalPlayers.hand, drawPile4);
+//   if (drawnCard) {
+//     console.log(`${totalPlayers.name} draws a card from the draw pile: ${drawnCard.value} of ${drawnCard.suit}`);
+//   }
+
+//   const drawnFaceDownCard = drawFromFaceDownPile(totalPlayers.hand, faceDownPile4);
+//   if (drawnFaceDownCard) {
+//     console.log(`${totalPlayers.name} draws a card from the face-down pile: ${drawnFaceDownCard.value} of ${drawnFaceDownCard.suit}`);
+//   }
+
+//   // Example: Simulate discarding the first card in the player's hand (you can implement card selection logic here)
+//   if (totalPlayers.hand.length > 0) {
+//     const cardToDiscard = totalPlayers.hand[0];
+//     discardToFaceDownPile(totalPlayers.hand, cardToDiscard, faceDownPile4);
+//     console.log(`${totalPlayers.name} discards to the face-down pile: ${cardToDiscard.value} of ${cardToDiscard.suit}`);
+//     turnEnded = true; // The player's turn ends after discarding.
+//   }
+
+//   // If the player completes their turn actions before the timeout, you can clear the timeout.
+//   if (turnEnded) {
+//     clearTimeout(timer);
+//   }
+
+//   // If the timeout has already been triggered, but the function completes later, display the message.
+//   if (timeoutTriggered && !turnEnded) {
+//     console.log(`${totalPlayers.name}'s turn has ended.`);
+//   }
+
+//   return turnEnded;
+// }
+
+
+// // Define your player, draw pile, and face-down pile
+// const totalPlayers = {
+//   name: 'Player 1',
+//   hand: [
+//     { suit: 'Hearts', value: '2' },
+//     { suit: 'Diamonds', value: 'Ace' },
+//     // Add more cards as needed
+//   ],
+// };
+
+// const drawPile4 = [
+//   { suit: 'Hearts', value: '5' },
+//   { suit: 'Spades', value: '7' },
+//   // Add more cards as needed
+// ];
+
+// const faceDownPile4 = [
+//   { suit: 'Clubs', value: '9' },
+//   { suit: 'Diamonds', value: 'King' },
+//   // Add more cards as needed
+// ];
+
+// console.log("Simulating Player 1's turn:");
+// const turnEnded = simulatePlayerTurn(totalPlayers, drawPile4, faceDownPile4);
+
+// if (turnEnded) {
+//   console.log("Player 1's turn has ended.");
+// } else {
+//   console.log("Player 1's turn is still ongoing.");
+// }
+
+
+function simulatePlayerTurn(totalPlayers, drawPile4, faceDownPile4) {
+  console.log(`It's ${totalPlayers.name}'s turn`);
+  displayHand(totalPlayers.hand);
+
+  if (checkWinning(totalPlayers)) {
+    console.log(`${totalPlayers.name} has won the game!`);
+    return Promise.resolve(true);
   }
 
-  const drawnCard = drawCard(player.hand, drawPile);
-  if (drawnCard) {
-    console.log(`${player.name} draws a card from the draw pile: ${drawnCard.value} of ${drawnCard.suit}`);
-  }
+  return new Promise((resolve, reject) => {
+    const turnTimeout = 5000; // 5 seconds in milliseconds
 
-  const drawnFaceDownCard = drawFromFaceDownPile(player.hand, faceDownPile);
-  if (drawnFaceDownCard) {
-    console.log(`${player.name} draws a card from the face-down pile: ${drawnFaceDownCard.value} of ${drawnFaceDownCard.suit}`);
-  }
+    const timer = setTimeout(() => {
+      console.log(`${totalPlayers.name} took too long! Turn ended.`);
+      // Handle the case when the player's turn times out, e.g., deduct points or skip the turn
+      resolve(true); // Resolving the promise indicates the turn has ended
+    }, turnTimeout);
 
-  const cardToDiscard = player.hand[0];
-  discardToFaceDownPile(player.hand, cardToDiscard, faceDownPile);
-  console.log(`${player.name} discards to the face-down pile: ${cardToDiscard.value} of ${cardToDiscard.suit}`);
+    // Simulate drawing a card from the draw pile
+    const drawnCard = drawCard(totalPlayers.hand, drawPile4);
+    if (drawnCard) {
+      console.log(`${totalPlayers.name} draws a card from the draw pile: ${drawnCard.value} of ${drawnCard.suit}`);
+    }
 
-  return false;
+    // Simulate drawing a card from the face-down pile
+    const drawnFaceDownCard = drawFromFaceDownPile(totalPlayers.hand, faceDownPile4);
+    if (drawnFaceDownCard) {
+      console.log(`${totalPlayers.name} draws a card from the face-down pile: ${drawnFaceDownCard.value} of ${drawnFaceDownCard.suit}`);
+    }
+
+    // Example: Simulate discarding the first card in the player's hand (you can implement card selection logic here)
+    if (totalPlayers.hand.length > 0) {
+      const cardToDiscard = totalPlayers.hand[0];
+      discardToFaceDownPile(totalPlayers.hand, cardToDiscard, faceDownPile4);
+      console.log(`${totalPlayers.name} discards to the face-down pile: ${cardToDiscard.value} of ${cardToDiscard.suit}`);
+    }
+
+    // Clear the timeout since the player's turn ended
+    clearTimeout(timer);
+    resolve(true);
+  });
 }
+
+// Define your player, draw pile, and face-down pile
+const totalPlayers = {
+  name: 'Player 1',
+  hand: [
+    { suit: 'Hearts', value: '2' },
+    { suit: 'Diamonds', value: 'Ace' },
+    // Add more cards as needed
+  ],
+};
+
+const drawPile4 = [
+  { suit: 'Hearts', value: '5' },
+  { suit: 'Spades', value: '7' },
+  // Add more cards as needed
+];
+
+const faceDownPile4 = [
+  { suit: 'Clubs', value: '9' },
+  { suit: 'Diamonds', value: 'King' },
+  // Add more cards as needed
+];
+
+console.log("Simulating Player 1's turn:");
+simulatePlayerTurn(totalPlayers, drawPile4, faceDownPile4)
+  .then((turnEnded) => {
+    if (turnEnded) {
+      console.log("Player 1's turn has ended.");
+    } else {
+      console.log("Player 1's turn is still ongoing.");
+    }
+  });
+
+
+
 
 //----------------------------------------- startGameWithPlayers -----------------------------------------
 

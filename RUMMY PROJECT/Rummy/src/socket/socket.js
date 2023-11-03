@@ -671,6 +671,7 @@ function initializeSocket(server) {
       const players = game.players
       if (game) {
         // Store the game state in the room object
+        io.to(gameId).emit('cards', initializeDeck())
         io.to(players[0].name).emit('handCard', game.players[0].hand);
         io.to(players[1].name).emit('handCard', game.players[1].hand);
         io.to(gameId).emit('faceDownPiles', game.faceDownPile)
