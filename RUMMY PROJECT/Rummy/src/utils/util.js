@@ -827,76 +827,305 @@ console.log(sampleDeck);
 
 //--------------------------------------------- dealCards ----------------------------------------------
 
+// function dealCards(players, deck) {
+//   shuffleDeck(deck);
+
+//   const numPlayers = players.length;
+//   const numCardsPerPlayer = numPlayers === 2 ? 10 : 7;
+
+//   const drawPile = deck.slice(numCardsPerPlayer * numPlayers);
+//   const faceDownPile = deck.slice(0, numCardsPerPlayer * numPlayers);
+
+//   for (let i = 0; i < numCardsPerPlayer; i++) {
+//     for (let j = 0; j < numPlayers; j++) {
+//       players[j].hand.push(deck[i + numCardsPerPlayer * j]);
+//     }
+//   }
+
+//   return { drawPile, faceDownPile };
+// }
+
+// // Sample testing code
+// const players = [
+//   { name: "Rakesh", hand: [] },
+//   { name: "Rajesh", hand: [] }
+// ];
+
+// const deck1 = [
+//   // Add your deck of cards here
+//   // For example: 'Card1', 'Card2', 'Card3', ...
+//   'Card1', 'Card2', 'Card3', 'Card4', 'Card5', 'Card6', 'Card7',
+//   'Card8', 'Card9', 'Card10', 'Card11', 'Card12', 'Card13', 'Card14',
+//   'Card15', 'Card16', 'Card17', 'Card18', 'Card19', 'Card20',
+// ];
+
+// const result = dealCards(players, deck1);
+
+// console.log("Draw Pile:", result.drawPile);
+// console.log("Face Down Pile:", result.faceDownPile);
+
+// players.forEach((player, index) => {
+//   console.log(`${player.name}'s hand:`, player.hand);
+// });
+
+
+// function dealCards(players, deck) {
+//   shuffleDeck(deck);
+
+//   const numPlayers = players.length;
+//   const numCardsPerPlayer = (numPlayers === 2) ? 10 : 7;
+
+//   let faceDownPile = [];
+//   let tempDeck = [...deck]; // Create a copy of the deck to avoid modifying the original deck
+
+//   // Distribute cards to players
+//   for (let i = 0; i < numCardsPerPlayer; i++) {
+//     for (let j = 0; j < numPlayers; j++) {
+//       // Ensure that the card drawn for the player is not in their hand or faceDownPile
+//       let validCard = false;
+//       let selectedCard;
+
+//       while (!validCard) {
+//         selectedCard = tempDeck[Math.floor(Math.random() * tempDeck.length)];
+
+//         if (
+//           !players[j].hand.some((card) => card.suit === selectedCard.suit && card.value === selectedCard.value) &&
+//           !faceDownPile.some((card) => card.suit === selectedCard.suit && card.value === selectedCard.value)
+//         ) {
+//           validCard = true;
+//         }
+//       }
+
+//       players[j].hand.push(selectedCard);
+//       tempDeck = tempDeck.filter(
+//         (card) => card.suit !== selectedCard.suit || card.value !== selectedCard.value
+//       );
+//     }
+//   }
+
+//   faceDownPile = tempDeck;
+
+//   return { faceDownPile };
+// }
+
+// const players = [
+//   { name: "Rakesh", hand: [] },
+//   { name: "Rajesh", hand: [] }
+// ];
+
+// const deck1 = initializeDeck();
+
+// const result = dealCards(players, deck1);
+
+// console.log("Face Down Pile:");
+// console.log(result.faceDownPile);
+
+// players.forEach((player) => {
+//   console.log(`${player.name}'s hand:`);
+//   console.log(player.hand);
+// })
+
+
+
 function dealCards(players, deck) {
   shuffleDeck(deck);
 
   const numPlayers = players.length;
-  const numCardsPerPlayer = numPlayers === 2 ? 10 : 7;
+  const numCardsPerPlayer = (numPlayers === 2) ? 10 : 7;
 
-  const drawPile = deck.slice(numCardsPerPlayer * numPlayers);
-  const faceDownPile = deck.slice(0, numCardsPerPlayer * numPlayers);
+  let faceDownPile = [];
+  let tempDeck = [...deck]; // Original deck ko modify na karne ke liye ek temporary deck banaya gaya hai.
 
-  for (let i = 0; i < numCardsPerPlayer; i++) {
-    for (let j = 0; j < numPlayers; j++) {
-      players[j].hand.push(deck[i + numCardsPerPlayer * j]);
+  // Khiladiyon ko cards baantne ka kaam
+  for (let i = 0; i < numCardsPerPlayer * numPlayers; i++) {
+    let selectedCard = tempDeck[Math.floor(Math.random() * tempDeck.length)];
+
+    let playerIndex = i % numPlayers; // Determine the current player
+    let validCard = false;
+
+    while (!validCard) {
+      if (
+        !players[playerIndex].hand.some((card) => card.suit === selectedCard.suit && card.value === selectedCard.value) &&
+        !faceDownPile.some((card) => card.suit === selectedCard.suit && card.value === selectedCard.value)
+      ) {
+        validCard = true;
+      } else {
+        selectedCard = tempDeck[Math.floor(Math.random() * tempDeck.length)];
+      }
     }
+
+    players[playerIndex].hand.push(selectedCard);
+    tempDeck = tempDeck.filter(
+      (card) => card.suit !== selectedCard.suit || card.value !== selectedCard.value
+    );
   }
 
-  return { drawPile, faceDownPile };
+  faceDownPile = tempDeck; // Bachi hui cards ko faceDownPile mein daala gaya hai.
+
+   //faceUpPile = [];
+
+  return { faceDownPile };
 }
 
-// Sample testing code
 const players = [
   { name: "Rakesh", hand: [] },
   { name: "Rajesh", hand: [] }
 ];
 
-const deck1 = [
-  // Add your deck of cards here
-  // For example: 'Card1', 'Card2', 'Card3', ...
-  'Card1', 'Card2', 'Card3', 'Card4', 'Card5', 'Card6', 'Card7',
-  'Card8', 'Card9', 'Card10', 'Card11', 'Card12', 'Card13', 'Card14',
-  'Card15', 'Card16', 'Card17', 'Card18', 'Card19', 'Card20'
-];
+const deck1 = initializeDeck();
 
 const result = dealCards(players, deck1);
 
-console.log("Draw Pile:", result.drawPile);
-console.log("Face Down Pile:", result.faceDownPile);
+// Display the output
+console.log("Face Down Pile:");
+console.log(result.faceDownPile);
 
-players.forEach((player, index) => {
-  console.log(`${player.name}'s hand:`, player.hand);
+console.log("Face Up Pile (Initially Empty):");
+console.log(result.faceUpPile);
+
+players.forEach((player) => {
+  console.log(`${player.name}'s hand:`);
+  console.log(player.hand);
 });
+
 
 //------------------------------------------ drawCard ------------------------------------------
 
-function drawCard(playerHand, drawPile) {
-  if (drawPile.length === 0) {
-    console.log('Draw pile is empty.');
-    return null;
+// function drawCard(playerHand, drawPile) {
+//   if (drawPile.length === 0) {
+//     console.log('Draw pile is empty.');
+//     return null;
+//   }
+//   const card = drawPile.pop();
+//   playerHand.push(card);
+//   return card;
+// }
+
+// // Sample testing code
+// const drawPile = ['Card1', 'Card2', 'Card3', 'Card4', 'Card5'];
+// const playerHand = [];
+
+// console.log('Before drawing a card:');
+// console.log('Draw Pile:', drawPile);
+// console.log('Player Hand:', playerHand);
+
+// const drawnCard = drawCard(playerHand, drawPile);
+
+// if (drawnCard !== null) {
+//   console.log('Card drawn:', drawnCard);
+// }
+
+// console.log('After drawing a card:');
+// console.log('Draw Pile:', drawPile);
+// console.log('Player Hand:', playerHand);
+
+
+function drawCard(playerHand, faceDownPile, faceUpPile) {
+  if (!faceDownPile || (faceUpPile && faceUpPile.length > 0)) {
+    let drawnCard;
+
+    if (faceUpPile && faceUpPile.length > 0) {
+      // If the face up pile has cards, draw from there first
+      drawnCard = faceUpPile.pop();
+    } else if (faceDownPile.length > 0) {
+      // If the face up pile is empty, draw from the face down pile
+      drawnCard = faceDownPile.pop();
+    }
+
+    if (drawnCard) {
+      playerHand.push(drawnCard);
+      return drawnCard;
+    }
   }
-  const card = drawPile.pop();
-  playerHand.push(card);
-  return card;
+
+  console.log('Both face down pile and face up pile are empty. Cannot draw a card.');
+  return null;
 }
 
-// Sample testing code
-const drawPile = ['Card1', 'Card2', 'Card3', 'Card4', 'Card5'];
-const playerHand = [];
+
+const playerHand = [6,7,8,9,10]; // Initialize the player's hand
+const faceDownPiles = [1,2,3,4,5
+  // { suit: 'Hearts', value: '2' },
+  // { suit: 'Diamonds', value: 'Ace' },
+  // { suit: 'Clubs', value: '5' },
+  // { suit: 'Spades', value: 'King' }
+  // Add more cards to the face down pile
+];
+
+const faceUpPile = [11,35,46]; // Initialize the face up pile as an empty array
 
 console.log('Before drawing a card:');
-console.log('Draw Pile:', drawPile);
 console.log('Player Hand:', playerHand);
+console.log('Face Down Pile:', faceDownPiles);
+console.log('Face Up Pile:', faceUpPile);
 
-const drawnCard = drawCard(playerHand, drawPile);
+const drawnCard = drawCard(playerHand, faceDownPiles, faceUpPile);
 
 if (drawnCard !== null) {
   console.log('Card drawn:', drawnCard);
 }
 
 console.log('After drawing a card:');
-console.log('Draw Pile:', drawPile);
 console.log('Player Hand:', playerHand);
+console.log('Face Down Pile:', faceDownPiles);
+console.log('Face Up Pile:', faceUpPile);
+
+
+//------------------------------------------- discardCard --------------------------------------------
+
+// function discardCard(playerHand, cardToDiscard, discardPile) {
+//   const index = playerHand.findIndex(
+//     card => card.suit === cardToDiscard.suit && card.value === cardToDiscard.value
+//   );
+//   if (index !== -1) {
+//     playerHand.splice(index, 1);
+//     discardPile.push(cardToDiscard);
+//   }
+// }
+
+// const samplePlayerHand = [
+//   { suit: 'Hearts', value: '2' },
+//   { suit: 'Diamonds', value: 'Ace' },
+//   { suit: 'Clubs', value: '5' },
+//   { suit: 'Spades', value: 'King' },
+//   // Add more cards here
+// ];
+
+// const sampleDiscardPile = [];
+
+// const cardToDiscard = { suit: 'Hearts', value: '2' }; // Change this to the card you want to discard
+
+// discardCard(samplePlayerHand, cardToDiscard, sampleDiscardPile);
+
+// console.log("hiiii")
+// console.log('Updated Player Hand:', samplePlayerHand);
+// console.log('Updated Discard Pile:', sampleDiscardPile);
+
+function discardCard(playerHand, cardToDiscard, faceUpPile) {
+  const index = playerHand.findIndex(
+    (card) => card.suit === cardToDiscard.suit && card.value === cardToDiscard.value
+  );
+  if (index !== -1) {
+    playerHand.splice(index, 1);
+    faceUpPile.push(cardToDiscard);
+  }
+}   
+
+// Initialize player's hand, face up pile, and a card to discard
+const playerHand6 = [1, 2, 3, 4, 5]; // Assume player has these cards
+const faceUpPile1 = [6, 7, 8]; // Assume face up pile has these cards
+const cardToDiscard = 3; // Change this to the card you want to discard
+
+// Call the `discardCard` function
+discardCard(playerHand6, cardToDiscard, faceUpPile1);
+
+// Display the output
+console.log("Player's Hand After Discarding:");
+console.log(playerHand6);
+
+console.log("Face Up Pile After Discarding:");
+console.log(faceUpPile1);
+
 
 //-------------------------------------------- drawFromFaceDownPile --------------------------------
 
@@ -918,9 +1147,9 @@ console.log('Before drawing from face-down pile:');
 console.log('Face-down Pile:', faceDownPile);
 console.log('Player Hand:', playerHand1);
 
-const drawnCard1 = drawFromFaceDownPile(playerHand, faceDownPile);
+const drawnCard1 = drawFromFaceDownPile(playerHand1, faceDownPile);
 
-if (drawnCard !== null) {
+if (drawnCard1 !== null) {
   console.log('Card drawn from face-down pile:', drawnCard1);
 }
 
@@ -930,33 +1159,33 @@ console.log('Player Hand:', playerHand1);
 
 //------------------------------------------- discardCard --------------------------------------------
 
-function discardCard(playerHand, cardToDiscard, discardPile) {
-  const index = playerHand.findIndex(
-    card => card.suit === cardToDiscard.suit && card.value === cardToDiscard.value
-  );
-  if (index !== -1) {
-    playerHand.splice(index, 1);
-    discardPile.push(cardToDiscard);
-  }
-}
+// function discardCard(playerHand, cardToDiscard, discardPile) {
+//   const index = playerHand.findIndex(
+//     card => card.suit === cardToDiscard.suit && card.value === cardToDiscard.value
+//   );
+//   if (index !== -1) {
+//     playerHand.splice(index, 1);
+//     discardPile.push(cardToDiscard);
+//   }
+// }
 
-const samplePlayerHand = [
-  { suit: 'Hearts', value: '2' },
-  { suit: 'Diamonds', value: 'Ace' },
-  { suit: 'Clubs', value: '5' },
-  { suit: 'Spades', value: 'King' },
-  // Add more cards here
-];
+// const samplePlayerHand = [
+//   { suit: 'Hearts', value: '2' },
+//   { suit: 'Diamonds', value: 'Ace' },
+//   { suit: 'Clubs', value: '5' },
+//   { suit: 'Spades', value: 'King' },
+//   // Add more cards here
+// ];
 
-const sampleDiscardPile = [];
+// const sampleDiscardPile = [];
 
-const cardToDiscard = { suit: 'Hearts', value: '2' }; // Change this to the card you want to discard
+// const cardToDiscard = { suit: 'Hearts', value: '2' }; // Change this to the card you want to discard
 
-discardCard(samplePlayerHand, cardToDiscard, sampleDiscardPile);
+// discardCard(samplePlayerHand, cardToDiscard, sampleDiscardPile);
 
-console.log("hiiii")
-console.log('Updated Player Hand:', samplePlayerHand);
-console.log('Updated Discard Pile:', sampleDiscardPile);
+// console.log("hiiii")
+// console.log('Updated Player Hand:', samplePlayerHand);
+// console.log('Updated Discard Pile:', sampleDiscardPile);
 
 //--------------------------------------- discardToFaceDownPile ----------------------------------------
 
@@ -1616,3 +1845,6 @@ module.exports = {
   continuePreviousGame,
   startNewGame,
 };
+
+
+

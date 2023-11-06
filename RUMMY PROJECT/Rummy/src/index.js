@@ -98,7 +98,6 @@ mongoose.connect("mongodb+srv://BIKASH:2NQSqnkWjFq2TWNe@cluster0.bbmcbft.mongodb
   initializeSocket(server);
 
   
-
 app.use("/", route);
 app.use("/", pokerRoute);
 app.use("/", rummyPointHistoryRoute);
