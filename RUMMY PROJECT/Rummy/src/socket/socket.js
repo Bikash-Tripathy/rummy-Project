@@ -674,7 +674,7 @@ function initializeSocket(server) {
         io.to(gameId).emit('cards', initializeDeck())
         io.to(players[0].name).emit('handCard', game.players[0].hand);
         io.to(players[1].name).emit('handCard', game.players[1].hand);
-        io.to(gameId).emit('faceDownPiles', game.faceDownPile)
+        //io.to(gameId).emit('faceDownPiles', game.faceDownPile)
       } else {
         socket.to(gameId).emit('invalidPlayerCount', 'Invalid number of players. The game supports 2 to 5 players.');
       }
@@ -684,7 +684,7 @@ function initializeSocket(server) {
     socket.on('drawCard', (playerIndex) => {
       if (socket.game) {
         const player = socket.game.players[playerIndex];
-        const drawnCard = drawCard(player.hand, socket.game.drawPile);
+        const drawnCard = drawCard(player.hand, socket.game.faceDownPile,socket.game.faceUpPile);
         // socket.emit('')
         socket.emit('handCard', player.hand);
         socket.emit('drawnCard', drawnCard);
@@ -698,7 +698,7 @@ function initializeSocket(server) {
         const player = socket.game.players[playerIndex];
         discardCard(player.hand, cardToDiscard, socket.game.faceUpPile);
         socket.emit('handCard', player.hand);
-        io.to('game1').emit('faceUpPiles', socket.game.drawPile);
+        io.to('game1').emit('faceUpPile', socket.game.faceUpPile);
         socket.emit('discardedCard', socket.game.faceUpPile);
       }
     });

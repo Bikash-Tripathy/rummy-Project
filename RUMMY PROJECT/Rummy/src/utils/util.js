@@ -1024,12 +1024,12 @@ function drawCard(playerHand, faceDownPile, faceUpPile) {
   if (!faceDownPile || (faceUpPile && faceUpPile.length > 0)) {
     let drawnCard;
 
-    if (faceUpPile && faceUpPile.length > 0) {
+    if (faceUpPile.length == 0) {
       // If the face up pile has cards, draw from there first
-      drawnCard = faceUpPile.pop();
-    } else if (faceDownPile.length > 0) {
-      // If the face up pile is empty, draw from the face down pile
       drawnCard = faceDownPile.pop();
+    } else if (faceDownPile.length == 0) {
+      // If the face up pile is empty, draw from the face down pile
+      drawnCard = faceUpPile.pop();
     }
 
     if (drawnCard) {
@@ -1112,9 +1112,12 @@ function discardCard(playerHand, cardToDiscard, faceUpPile) {
 }   
 
 // Initialize player's hand, face up pile, and a card to discard
-const playerHand6 = [1, 2, 3, 4, 5]; // Assume player has these cards
+const playerHand6 = [{ suit: 'Hearts', value: '2' },
+  { suit: 'Diamonds', value: 'Ace' },
+  { suit: 'Clubs', value: '5' },
+   { suit: 'Spades', value: 'King' },]; // Assume player has these cards
 const faceUpPile1 = [6, 7, 8]; // Assume face up pile has these cards
-const cardToDiscard = 3; // Change this to the card you want to discard
+const cardToDiscard = { suit: 'Clubs', value: '5' }; // Change this to the card you want to discard
 
 // Call the `discardCard` function
 discardCard(playerHand6, cardToDiscard, faceUpPile1);
