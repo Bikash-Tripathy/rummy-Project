@@ -48,7 +48,7 @@
 
 ```javascript
 playerIndex=1
-card = {"suit":"Hearts","value":"2"}
+card = {"suit":"Spades","value":"7"}
 ```
 
 ```javascript
@@ -56,9 +56,9 @@ card = {"suit":"Hearts","value":"2"}
 [{"suit":"Spades","value":"6"},{"suit":"Hearts","value":"8"},{"suit":"Clubs","value":"2"},{"suit":"Diamonds","value":"Queen"},{"suit":"Hearts","value":"10"},{"suit":"Spades","value":"2"},{"suit":"Spades","value":"Queen"},{"suit":"Spades","value":"10"},{"suit":"Hearts","value":"7"},{"suit":"Clubs","value":"5"}]
 
 //event - discardedcard
-{"suit":"Spades","value":"6"}
+{"suit":"Spades","value":"7"}
 
 //event - faceUpPile
-[{"suit":"Spades","value":"6"}]
+[{"suit":"Spades","value":"7"}]
 ```
 
