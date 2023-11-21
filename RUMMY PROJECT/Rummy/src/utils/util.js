@@ -1213,6 +1213,27 @@ function checkWinning(player1, player2) {
   }
 }
 
+// const player1 = {
+//   hand: [
+//     { suit: 'Hearts', value: '2' },
+//     { suit: 'Spades', value: '2' },
+//     { suit: 'Diamonds', value: '2' },
+//   ],
+// };
+
+// const player2 = {
+//   hand: [
+//     { suit: 'Hearts', value: '2' },
+//     { suit: 'Spades', value: '3' },
+//     { suit: 'Diamonds', value: '4' },
+    
+//     { suit: 'Hearts', value: '2' },
+//     { suit: 'Spades', value: '2' },
+//     { suit: 'Diamonds', value: '2' },
+//   ]
+// };
+// const results = checkWinning(player1, player2);
+// console.log(results);
 
 
 //====================================== simulatePlayerTurn =========================================
@@ -1324,6 +1345,30 @@ function calculateScore(hand) {
   return score;
 }
 
+// // Define hands of cards for two players
+// const player1Hand = [
+//   { value: '2' },
+//   { value: 'King' },
+//   { value: '7' },
+//   { value: 'Ace' },
+//   // Add more cards for Player 1 as needed
+// ];
+
+// const player2Hand = [
+//   { value: '3' },
+//   { value: 'Queen' },
+//   { value: '5' },
+//   { value: '10' },
+//   // Add more cards for Player 2 as needed
+// ];
+
+// // Calculate the scores for both players
+// const player1Score = calculateScore(player1Hand);
+// const player2Score = calculateScore(player2Hand);
+
+// // Log the results
+// console.log('Player 1 Score:', player1Score);
+// console.log('Player 2 Score:', player2Score);
 
 
 

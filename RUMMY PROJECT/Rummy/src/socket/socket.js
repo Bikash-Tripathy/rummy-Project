@@ -1,122 +1,133 @@
+const { Server } = require('socket.io')
+const { Player, RummyGame } = require('./game')
+const players = {}
+const db = {}
 
-
-
-//======================================== New Game Logic =============================================
-
-const { Server } = require("socket.io")
-const { initializeGame, drawCard, discardCard } = require("./helpers")
-const db = { game1: [] }
 function initializeSocket(server) {
-  const io = new Server(server)
-  io.on("connection", socket => {
-    const id = socket.handshake.query.id
-    socket.join(["room1", `Player ${id}`])
-    socket.playerId = id
-    console.log("player joined", id)
-    socket.player = `Player ${id}`
+  const io = new Server(server, { cors: true })
+  io.on('connection', socket => {
+    const id = socket.id
+    const userId = socket.handshake.query.id
+    socket.player = new Player(`Player-Name ${id}`, id, userId)
+    socket.join(socket.player.room)
+    console.log(`Player-Name ${id}`, `player-id-${id}`, ' Joined')
     socket.use(([event, ...args], next) => {
       const gameId = socket.gameId
       const game = db[gameId]
-      console.log("on", event, "start :")
-      printGameState(game)
-      const id = socket.playerId
-      if (event === "draw" || event === "drop") {
-        if (!gameId) return
-        if (game.currentPlayer !== id) {
-          socket.emit("message", "Wait for your turn")
-          return next(new Error("Wait for your turn"))
+      console.log('on', event, 'start :')
+      const id = socket.player.room
+      console.log(id, game?.getCurrentPlayer().room)
+      if (event === 'draw' || event === 'drop') {
+        if (!gameId || !game) return
+        if (game.getCurrentPlayer().room !== id) {
+          socket.emit('message', 'Wait for your turn')
+          return next(new Error('Wait for your turn'))
         }
-        if (
-          event === "drop" &&
-          game.players[game.currentPlayer].hand.length !== 11
-        ) {
-          socket.emit("message", "Can't drop")
-          return next(new Error("Draw first"))
+        if (event === 'drop' && game.getCurrentPlayer().hand.length !== 11) {
+          socket.emit('message', "Can't drop")
+          return next(new Error('Draw first'))
         }
-        if (
-          event === "draw" &&
-          game.players[game.currentPlayer].hand.length !== 10
-        ) {
-          socket.emit("message", "Can't draw")
-          return next(new Error("Drop first"))
+        if (event === 'draw' && game.getCurrentPlayer().hand.length !== 10) {
+          socket.emit('message', "Can't draw")
+          return next(new Error('Drop first'))
         }
       }
       next()
     })
-
-    socket.on("game", async gameId => {
-      socket.to(gameId).emit("message", "a new player joined the game")
-      await socket.join(gameId)
+    socket.on('game', gameId => {
       socket.gameId = gameId
-      if (!(db[gameId] instanceof Array)) return
-      db[gameId].push(socket.handshake.query.id)
-      if (db[gameId].length < 2) {
-        io.to(gameId).emit("quantity", db[gameId].length)
-        io.to(gameId).emit("message", "Waiting for players to join")
+      players[gameId] = [...(players[gameId] || []), socket.player]
+      socket.to(gameId).emit('message', `${socket.player.name} Joined the game`)
+      socket.join(gameId)
+      console.log('players', players[gameId])
+      if (players[gameId].length < 2) {
+        io.to(gameId).emit('message', 'Waiting for players to join')
         return
       }
-      const game = initializeGame(db[gameId])
+
+      if (db[gameId]) {
+        // players[gameId].find(e=>e.userId ===socket.player.userId)
+        return io.to(socket.id).emit('message', 'Room is full')
+      }
+      const game = new RummyGame(players[gameId], gameId)
+      db[gameId] = game
       console.log(game)
-      io.to("room1").emit("message", "game started")
-      game.ids.forEach((id, i) => {
-        io.to(game.playerRooms[i]).emit("hand", game.players[id].hand)
+      io.to(socket.gameId).emit('message', 'game started')
+      game.players.map(player => {
+        console.log(player.name)
+        io.to(player.room).emit('hand', player.hand)
       })
-      db.game1 = game
-      io.to(gameId).emit("down", game.faceDownPile.length)
-      io.to(gameId).emit("up", game.faceUpPile[game.faceUpPile.length - 1])
+      io.to(gameId).emit('down', game.deck.length)
+      io.to(gameId).emit('up', game.droppedDeck[game.droppedDeck.length - 1])
+      const currentPlayer = game.getCurrentPlayer()
       game.intervalTimer = setInterval(() => {
-        if (game.players[game.currentPlayer].hand.length === 11) {
+        console.log(
+          game.getCurrentPlayer().name,
+          game.getCurrentPlayer().hand.length
+        )
+        if (game.getCurrentPlayer().hand.length === 11) {
+          console.log('Auto dropping card log:')
           return dropCard(io, socket)()
         } else {
-          game.playerIndex = (game.playerIndex + 1) % 2
-          game.currentPlayer = game.ids[game.playerIndex]
+          game.switchTurn()
         }
-        console.log("player turn", game.currentPlayer)
-        io.to(game.playerRooms[game.playerIndex]).emit(
-          "turn",
-          "Start a 30s timer for draw and drop"
-        )
-      }, 30000)
+        console.log('player turn', game.getCurrentPlayer().name)
+        io.to(game.getCurrentPlayer().room).emit('turn', {
+          timeOut: 15,
+          canDraw: true,
+          canDrop: false,
+        })
+      }, 15000)
     })
 
-    socket.on("draw", position => {
+    socket.on('draw', position => {
       const gameId = socket.gameId
       const game = db[gameId]
-      const id = socket.playerId
-      const drawnCard = drawCard(game, id, position)
-      socket.emit("hand", game.players[id].hand)
-      console.log("on draw event end: ")
-      printGameState(game)
+      game.drawCard(position)
+      socket.emit('hand', game.getCurrentPlayer().hand)
+      io.to(gameId).emit('down', game.deck.length)
+      io.to(gameId).emit('up', game.droppedDeck[game.droppedDeck.length - 1])
     })
-    socket.on("drop", dropCard(io, socket))
+    socket.on('drop', card => {
+      dropCard(io, socket)(card)
+    })
+    socket.on('disconnect', () => {
+      console.log(socket.player.id, 'disconnected!')
+      const game = db[socket.gameId]
+      if (!game) return
+      clearInterval(game.intervalTimer)
+      io.to(game.gameId).emit('message', 'Game cancelled')
+      delete db[socket.gameId]
+      delete players[socket.gameId]
+      io.sockets.in(socket.gameId).disconnectSockets()
+      console.log(db)
+      console.log(players)
+    })
   })
 }
 
 function dropCard(io, socket) {
   return function (card) {
-    const id = socket.playerId
-    const gameId = socket.gameId
-    const game = db[gameId]
-    console.log("dropping card")
+    console.log('dropping card...')
+    const game = db[socket.gameId]
+    const gameId = game.gameId
+    const currentPlayer = game.getCurrentPlayer()
+    if (!card) {
+      console.log('auto dropping last card ')
+    }
     game.intervalTimer.refresh()
-    discardCard(game, game.currentPlayer, card)
-    socket.emit("hand", game.players[id].hand)
-    io.to(gameId).emit("down", game.faceDownPile.length)
-    io.to(gameId).emit("up", game.faceUpPile[game.faceUpPile.length - 1])
-    game.playerIndex = (game.playerIndex + 1) % 2
-    game.currentPlayer = game.ids[game.playerIndex]
-    io.to(game.playerRooms[game.playerIndex]).emit(
-      "turn",
-      "Start a 30s timer for draw and drop"
-    )
-    console.log("on drop event end: ")
-    printGameState(game)
+    game.dropCard(card)
+    io.to(currentPlayer.room).emit('hand', currentPlayer.hand)
+    io.to(gameId).emit('down', game.deck.length)
+    io.to(gameId).emit('up', game.droppedDeck[game.droppedDeck.length - 1])
+    game.switchTurn()
+    io.to(game.getCurrentPlayer().room).emit('turn', {
+      timeOut: 15,
+      canDraw: true,
+      canDrop: false,
+    })
+    console.log('on drop event end: ')
   }
 }
 
-function printGameState(game) {
-  console.log("current player", game?.currentPlayer)
-  console.log("Player 1 hand card size: ", game?.players["1"]?.hand.length)
-  console.log("Player 2 hand card size: ", game?.players["2"]?.hand.length)
-}
 module.exports = initializeSocket
