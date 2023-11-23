@@ -141,10 +141,11 @@ exports.exitGame = async (req, res) => {
 };
 
 
-// Define card deck, functions, and other logic...
+
+
 
 const suits = ['Hearts', 'Diamonds', 'Clubs', 'Spades'];
-const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A','Joker'];
+const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
 
 function createDeck() {
     let deck = [];
@@ -178,55 +179,56 @@ function resetHands(players) {
 }
 
 function evaluateHand(hand) {
-    hand.sort((a, b) => values.indexOf(a.value) - values.indexOf(b.value));
+  hand.sort((a, b) => values.indexOf(a.value) - values.indexOf(b.value));
 
-    const counts = {};
-    for (let card of hand) {
-        counts[card.value] = (counts[card.value] || 0) + 1;
-    }
+  const counts = {};
+  for (let card of hand) {
+      counts[card.value] = (counts[card.value] || 0) + 1;
+  }
 
-    const isFlush = hand.every(card => card.suit === hand[0].suit);
-    const isStraight = values.indexOf(hand[4].value) - values.indexOf(hand[0].value) === 4 && new Set(hand.map(card => card.value)).size === 5;
+  const isFlush = hand.every(card => card.suit === hand[0].suit);
+  const isStraight = values.indexOf(hand[4].value) - values.indexOf(hand[0].value) === 4 && new Set(hand.map(card => card.value)).size === 5;
 
-    if (isFlush && isStraight) {
-        if (hand[4].value === 'A' && hand[0].value === '10') {
-            return 'Royal Flush';
-        }
-        return 'Straight Flush';
-    }
+  if (isFlush && isStraight) {
+      if (hand[4].value === 'A' && hand[0].value === '10') {
+          return 'Royal Flush';
+      }
+      return 'Straight Flush';
+  }
 
-    const cardCounts = Object.values(counts);
+  const cardCounts = Object.values(counts);
 
-    if (cardCounts.includes(4)) {
-        return 'Four of a Kind';
-    }
+  if (cardCounts.includes(4)) {
+      return 'Four of a Kind';
+  }
 
-    if (cardCounts.includes(3) && cardCounts.includes(2)) {
-        return 'Full House';
-    }
+  if (cardCounts.includes(3) && cardCounts.includes(2)) {
+      return 'Full House';
+  }
 
-    if (isFlush) {
-        return 'Flush';
-    }
+  if (isFlush) {
+      return 'Flush';
+  }
 
-    if (isStraight) {
-        return 'Straight';
-    }
+  if (isStraight) {
+      return 'Straight';
+  }
 
-    if (cardCounts.includes(3)) {
-        return 'Three of a Kind';
-    }
+  if (cardCounts.includes(3)) {
+      return 'Three of a Kind';
+  }
 
-    if (cardCounts.filter(count => count === 2).length === 2) {
-        return 'Two Pair';
-    }
+  if (cardCounts.filter(count => count === 2).length === 2) {
+      return 'Two Pair';
+  }
 
-    if (cardCounts.includes(2)) {
-        return 'One Pair';
-    }
+  if (cardCounts.includes(2)) {
+      return 'One Pair';
+  }
 
-    return 'High Card - ' + hand[4].value + ' of ' + hand[4].suit;
+  return 'High Card - ' + hand[4].value + ' of ' + hand[4].suit;
 }
+
 
 function determineWinner(players) {
     let winner = players[0];
@@ -244,29 +246,79 @@ function dealCommunityCards(deck, communityCards, numCards) {
     }
 }
 
+function dealCommunityRounds(deck, communityCards, flopCount = 1, turnCount = 1, riverCount = 1) {
+    for (let i = 0; i < flopCount; i++) {
+        dealCommunityCards(deck, communityCards, 3);
+    }
+    for (let i = 0; i < turnCount; i++) {
+        dealCommunityCards(deck, communityCards, 1);
+    }
+    for (let i = 0; i < riverCount; i++) {
+        dealCommunityCards(deck, communityCards, 1);
+    }
+}
+
+function placeBet(player, amount) {
+    player.bet += amount;
+    player.stack -= amount;
+}
+
+function validateBet(player, amount) {
+    return player.stack >= amount;
+}
+
+function adjustPot(pot, amount) {
+    pot += amount;
+    return pot;
+}
+
+const fixedBettingLimit = 10;
+
+function handleBettingRound(players, pot) {
+  players.forEach(player => {
+      if (player.hand.length > 0) {
+          const betAmount = Math.min(fixedBettingLimit, player.stack); // Placeholder logic for determining the bet amount
+          
+          if (validateBet(player, betAmount)) {
+              placeBet(player, betAmount);
+              pot = adjustPot(pot, betAmount);
+          } else {
+              // Handle insufficient funds scenario
+              console.log(`${player.name} does not have sufficient chips to bet.`);
+              // Optionally, you can implement a logic here to skip this player's turn or take other actions
+              // For example, skip the player's turn or force a minimum bet they can afford
+          }
+      }
+  });
+  return pot;
+}
+
+
 function initializeGame() {
     let deck = createDeck();
     shuffle(deck);
     let players = [
-        { name: 'Player 1', hand: [] },
-        { name: 'Player 2', hand: [] }
+        { name: 'Player 1', hand: [], bet: 0, stack: 1000 },
+        { name: 'Player 2', hand: [], bet: 0, stack: 1000 }
     ];
     resetHands(players);
 
-    // Deal initial cards
-    players = dealCards(deck, players, 2);
+    players = dealCards(deck, players, 2); // Dealing 2 hole cards to each player
 
     let communityCards = [];
-    communityCards = dealCommunityCards(deck, communityCards, 3); // Deal flop (3 cards)
-    
+    dealCommunityRounds(deck, communityCards, 1, 0, 0); // Deal flop (1 round)
+
+    let pot = 0;
+    pot = handleBettingRound(players, pot);
+
     return {
         players,
         deck,
-        communityCards
+        communityCards,
+        pot
     };
 }
 
-// Exporting functions
 // export { 
 //     createDeck,
 //     shuffle,
@@ -275,5 +327,10 @@ function initializeGame() {
 //     evaluateHand,
 //     determineWinner,
 //     dealCommunityCards,
+//     dealCommunityRounds,
+//     placeBet,
+//     validateBet,
+//     adjustPot,
+//     handleBettingRound,
 //     initializeGame
 // };
