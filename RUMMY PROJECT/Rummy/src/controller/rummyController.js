@@ -128,6 +128,7 @@ exports.createRummyGame = async (req, res) => {
   };
 
 
+
 exports.joinGame = async (req, res) => {
   try {
     const { gameId, playerId } = req.body;
@@ -151,6 +152,8 @@ exports.joinGame = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
+
+
 
 // Controller function for leaving the game with confirmation
 exports.leaveGame = async (req, res) => {
