@@ -19,11 +19,12 @@ const playerSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  chips: {
-    type: Number,
-    default: 0,
-  },
+  // chips: {
+  //   type: Number,
+  //   default: 0,
+  // },
 });
+
 
 
  module.exports = mongoose.model('Player', playerSchema);

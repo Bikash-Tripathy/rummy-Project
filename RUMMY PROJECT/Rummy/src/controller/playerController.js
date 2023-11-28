@@ -23,9 +23,9 @@ exports.registerPlayer = async (req, res) => {
     });
 
     await player.save();
-    res.status(201).json({ message: 'Player registered successfully', player });
+    res.status(201).json({ message: 'User registered successfully', player });
   } catch (error) {
-    res.status(500).json({ error: 'Unable to register the player' });
+    res.status(500).json({ error: 'Unable to register the user' });
   }
 };
 
@@ -55,7 +55,7 @@ exports.loginPlayer = async (req, res) => {
     );
 
     // Send the token in the response
-    res.status(200).json({ message: 'Login successful', token });
+    res.status(200).json({ message: 'Login successfully', token });
   } catch (error) {
     res.status(500).json({ error: 'Unable to log in' });
   }
