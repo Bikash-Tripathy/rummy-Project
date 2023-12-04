@@ -1345,6 +1345,7 @@ function calculateScore(hand) {
   return score;
 }
 
+
 // // Define hands of cards for two players
 // const player1Hand = [
 //   { value: '2' },

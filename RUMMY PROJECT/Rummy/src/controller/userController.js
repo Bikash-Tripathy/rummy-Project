@@ -1,4 +1,5 @@
 const User = require('../model/User');
+const aws = require('../AWS/aws')
 
 // Controller function for creating a new user
 exports.createUser = async (req, res) => {
@@ -69,3 +70,16 @@ exports.deleteUser = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
+
+exports. uploadImage = async (req, res) => {
+  try {
+    console.log(req.file[0])
+      let imageUrl = await aws.uploadImage(req.file[0])
+      req.body.image = imageUrl
+      req.body.userId = req.params.userId  // automatically store userId due to authentication user
+      let saveData = await User.create(req.body)
+      return res.status(201).send({ status: true, msg: "Image uploaded successfully", Image: saveData })
+  } catch (error) {
+      return res.status(500).send({ status: false, msg: error.message })
+  }
+}

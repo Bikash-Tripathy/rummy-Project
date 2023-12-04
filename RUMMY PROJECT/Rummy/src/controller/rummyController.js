@@ -92,19 +92,51 @@ exports.createGames = async (req, res) => {
 
 
 
+// exports.createRummyGame = async (req, res) => {
+//     try {
+//       const createdGame = await rummyGameModel.create(req.body);
+//       //console.log(createdGame)
+//       res.status(201).json({
+//         message: 'Game created successfully',
+//         game: createdGame, 
+//       });
+//     } catch (error) {
+//       console.error(error);
+//       res.status(500).json({ message: 'Server error' });
+//     }
+//   };
+
 exports.createRummyGame = async (req, res) => {
-    try {
-      const createdGame = await rummyGameModel.create(req.body);
-      //console.log(createdGame)
-      res.status(201).json({
-        message: 'Game created successfully',
-        game: createdGame, 
-      });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Server error' });
+  try {
+    const { pointValue, minEntry, maxPlayer, totalPlayers, selectedPlayersRange } = req.body;
+
+    console.log('Received data:', req.body); // Log received data
+
+    // Your additional logic to validate selectedPlayersRange here
+    if (selectedPlayersRange < 2) {
+      console.log('Validation failed:', selectedPlayersRange); // Log selectedPlayersRange when validation fails
+      return res.status(400).json({ error: 'Selected players range must be 2 or more.' });
     }
-  };
+    
+
+    // Create a new game
+    const newGame = new rummyGameModel({
+      pointValue,
+      minEntry,
+      maxPlayer,
+      totalPlayers,
+      selectedPlayersRange,
+    });
+
+    // Save the game to the database
+    await newGame.save();
+
+    res.status(201).json({ message: 'Rummy game created successfully', game: newGame });
+  } catch (err) {
+    console.error('Error:', err); // Log any caught error
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
 
   exports.getRummyGameById = async (req, res) => {
     try {

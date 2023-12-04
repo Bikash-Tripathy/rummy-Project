@@ -161,8 +161,12 @@ function createDeck() {
     }
     return deck;
 }
+// Call createDeck() and store the result
+const deck = createDeck();
+console.log(deck);
 
-// Logic for shuffling deck
+//======================================= Logic for shuffling deck====================================
+
 function shuffle(deck) {
     for (let i = deck.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -170,7 +174,29 @@ function shuffle(deck) {
     }
 }
 
-// Logic for dealing cards to players
+// Create a sample deck of cards
+const sampleDeck = [
+    { suit: 'Hearts', value: '2' },
+    { suit: 'Hearts', value: '3' },
+    { suit: 'Hearts', value: '4' },
+    // ... Add more cards as needed
+    { suit: 'Spades', value: 'K' },
+    { suit: 'Spades', value: 'A' }
+];
+
+// Display the original deck in the console
+console.log('Original Deck:');
+console.log(sampleDeck);
+
+// Shuffle the deck using the shuffle function
+shuffle(sampleDeck);
+
+// Display the shuffled deck in the console
+console.log('Shuffled Deck:');
+console.log(sampleDeck);
+
+// ================================Logic for dealing cards to players ===============================
+
 function dealCards(deck, players, numCards) {
     for (let i = 0; i < numCards; i++) {
         players.forEach(player => {
@@ -179,14 +205,60 @@ function dealCards(deck, players, numCards) {
     }
 }
 
-// Logic for resetting players' hands
+// Create a sample deck of cards
+const sampleDeck1 = [
+    { suit: 'Hearts', value: '2' },
+    { suit: 'Hearts', value: '3' },
+    // ... Add more cards as needed
+    { suit: 'Spades', value: 'K' },
+    { suit: 'Spades', value: 'A' }
+];
+
+// Create sample players
+const Bikash = { name: 'Bikash', hand: [] };
+const Rakesh = { name: 'Rakesh', hand: [] };
+const players1 = [Bikash, Rakesh];
+
+// Display the original deck before dealing
+console.log('Original Deck:');
+console.log(sampleDeck1);
+
+// Deal cards to players from the sample deck
+dealCards(sampleDeck1, players1, 2); // Dealing 2 cards to each player
+
+// Display players' hands after dealing
+console.log('Players after dealing cards:');
+console.log(Bikash);
+console.log(Rakesh);
+
+// ===============================Logic for resetting players' hands ==================================
+
 function resetHands(players) {
     players.forEach(player => {
         player.hand = [];
     });
 }
 
-// Updated hand evaluation logic
+// Create sample players with hands
+const player1 = { name: 'Player 1', hand: [{ suit: 'Hearts', value: '2' }, { suit: 'Diamonds', value: 'K' }] };
+const player2 = { name: 'Player 2', hand: [{ suit: 'Clubs', value: '5' }, { suit: 'Spades', value: 'Q' }] };
+const players2 = [player1, player2];
+
+// Display players' hands before resetting
+console.log('Players before resetting hands:');
+console.log(player1);
+console.log(player2);
+
+// Reset hands of players
+resetHands(players2);
+
+// Display players' hands after resetting
+console.log('Players after resetting hands:');
+console.log(player1);
+console.log(player2);
+
+//============================== Updated hand evaluation logic =======================================
+
 function evaluateHand(hand) {
     hand.sort((a, b) => values.indexOf(a.value) - values.indexOf(b.value));
 
@@ -238,7 +310,21 @@ function evaluateHand(hand) {
     return 'High Card - ' + hand[4].value + ' of ' + hand[4].suit;
 }
 
-// Logic for determining the winner based on hand evaluation
+// Sample hand for testing
+const sampleHand = [
+    { suit: 'Hearts', value: '2' },
+    { suit: 'Hearts', value: '3' },
+    { suit: 'Hearts', value: '4' },
+    { suit: 'Hearts', value: '5' },
+    { suit: 'Hearts', value: '6' }
+];
+
+// Display the evaluated hand in the console
+console.log('Sample Hand:', sampleHand);
+console.log('Evaluated Hand:', evaluateHand(sampleHand));
+
+//=============================== Logic for determining the winner ==================================
+
 function determineWinner(players) {
     let winner = players[0];
     players.forEach(player => {
@@ -249,14 +335,54 @@ function determineWinner(players) {
     return winner;
 }
 
-// Logic for dealing community cards
+// Sample players with hands for testing
+// const player3 = { name: 'Alice', hand: [{ suit: 'Hearts', value: '2' }, { suit: 'Diamonds', value: 'K' }] };
+// const player4 = { name: 'Bob', hand: [{ suit: 'Clubs', value: '5' }, { suit: 'Spades', value: 'Q' }] };
+// const players3 = [player3, player4];
+
+// // Display players' hands before determining the winner
+// console.log('Players before determining winner:');
+// console.log(player3);
+// console.log(player4);
+
+// // Determine the winner among the players
+// const winner = determineWinner(players3);
+
+//Display the winner in the console
+//console.log('Winner:', winner.name);
+
+
+//==================================== Logic for dealing community cards===============================
+
 function dealCommunityCards(deck, communityCards, numCards) {
     for (let i = 0; i < numCards; i++) {
         communityCards.push(deck.pop());
     }
 }
 
-// Logic for dealing community rounds
+// Sample deck of cards (assuming it's already populated)
+const sampleDeck4 = [
+    { suit: 'Hearts', value: '2' },
+    { suit: 'Diamonds', value: 'K' },
+    // ... other cards
+    { suit: 'Clubs', value: '5' },
+    { suit: 'Spades', value: 'Q' }
+];
+
+// Initial community cards array
+const communityCards = [];
+
+// Display initial community cards
+console.log('Community Cards before dealing:', communityCards);
+
+// Deal a certain number of cards to the community
+dealCommunityCards(sampleDeck4, communityCards, 3); // Deal 3 cards
+
+// Display community cards after dealing
+console.log('Community Cards after dealing:', communityCards);
+
+//================================ Logic for dealing community rounds==================================
+
 function dealCommunityRounds(deck, communityCards, flopCount = 1, turnCount = 1, riverCount = 1) {
     for (let i = 0; i < flopCount; i++) {
         dealCommunityCards(deck, communityCards, 3);
@@ -269,22 +395,84 @@ function dealCommunityRounds(deck, communityCards, flopCount = 1, turnCount = 1,
     }
 }
 
-// Logic for placing a bet by a player
+// Sample deck of cards (assuming it's already populated)
+const sampleDeck5 = [
+    { suit: 'Hearts', value: '2' },
+    { suit: 'Diamonds', value: 'K' },
+    // ... other cards
+    { suit: 'Clubs', value: '5' },
+    { suit: 'Spades', value: 'Q' }
+];
+
+// Initial community cards array
+const communityCards1 = [];
+
+// Display initial community cards
+console.log('Community Cards before dealing rounds:', communityCards1);
+
+// Deal community rounds (1 flop, 1 turn, 1 river)
+dealCommunityRounds(sampleDeck5, communityCards1, 1, 1, 1);
+
+// Display community cards after dealing rounds
+console.log('Community Cards after dealing rounds:', communityCards1);
+
+//================================ Logic for placing a bet by a player=================================
+
 function placeBet(player, amount) {
     player.bet += amount;
     player.stack -= amount;
 }
 
-// Logic for validating a bet by a player
+// Sample player object
+let player = { name: 'Rahul', bet: 0, stack: 100 };
+
+// Display player's information before placing the bet
+console.log('Player before bet:', player);
+
+// Place a bet of 30
+const betAmount = 30;
+placeBet(player, betAmount);
+
+// Display player's information after placing the bet
+console.log('Player after bet:', player);
+
+//============================== Logic for validating a bet by a player ==================================
+
 function validateBet(player, amount) {
     return player.stack >= amount;
 }
 
-// Logic for adjusting the pot amount
+// Sample player object
+const player4 = { name: 'Player 1', stack: 100 };
+
+// Test bet amounts
+const betAmount1 = 50; 
+const betAmount2 = 150; 
+
+// Validate bet amounts against the player's stack
+console.log(`Bet amount ${betAmount1} is valid:`, validateBet(player4, betAmount1)); 
+console.log(`Bet amount ${betAmount2} is valid:`, validateBet(player4, betAmount2)); 
+
+//================================= Logic for adjusting the pot amount===================================
+
 function adjustPot(pot, amount) {
     pot += amount;
     return pot;
 }
+
+// Initial pot amount
+let initialPot = 100;
+
+// Display initial pot value
+console.log('Initial Pot:', initialPot);
+
+// Adjust the pot by adding 50
+const adjustedPot = adjustPot(initialPot, 50);
+
+// Display adjusted pot value
+console.log('Adjusted Pot:', adjustedPot);
+
+//========================================== handleBettingRound =======================================
 
 const fixedBettingLimit = 10;
 
@@ -339,7 +527,27 @@ function handleBettingRound(players, pot, currentBet) {
     return pot;
 }
 
-// Logic for initializing the game
+// Sample players with their properties (hand, bet, stack)
+const player5 = { name: 'Romesh', hand: [], bet: 0, stack: 100 };
+const player6 = { name: 'Sahil', hand: [], bet: 0, stack: 150 };
+const player7 = { name: 'Karn', hand: [], bet: 0, stack: 80 };
+const players = [player5, player6, player7];
+
+// Sample pot and current bet amounts
+let pot = 0;
+const currentBet = 20; // Set a different current bet amount
+
+// Simulate player actions in the betting round
+pot = handleBettingRound(players, pot, currentBet);
+
+// Display the updated pot and players' status after the betting round
+console.log('Pot after betting round:', pot);
+console.log('Player 1:', player5);
+console.log('Player 2:', player6);
+console.log('Player 3:', player7);
+
+//===================================== Logic for initializing the game =================================
+
 function initializeGame() {
     let deck = createDeck();
     shuffle(deck);
@@ -366,7 +574,12 @@ function initializeGame() {
     };
 }
 
-export {
+// Simulate initializing the game
+// const gameData = initializeGame();
+// console.log('Game Data:', gameData);
+
+
+module.export= {
     createDeck,
     shuffle,
     dealCards,

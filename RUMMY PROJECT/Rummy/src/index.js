@@ -76,11 +76,15 @@ const rummyRoutes = require('./route/rummyRoutes');
 const userRoutes = require('./route/userRoutes');
 //const rummyController = require('./controller/rummyController');
 const initializeSocket = require('./socket/socket');
+//const handleSocket = require('./socket/pokerSocket');
 const { initializeDeck, shuffleDeck, dealCards, drawCard, discardCard, takeFromDiscardPile, displayHand, isValidSequence, isValidSet, isValidMeld } = require('./utils/util');
+//const {createDeck}= require('./utils/pokerUtil');
+
 
 const http = require('http');
 //const socketIo = require('socket.io');
 const cors = require("cors");
+const multer = require("multer")
 
 
 const app = express();
@@ -88,6 +92,7 @@ const server = http.createServer(app);
 //const io = socketIo(server);
 
 app.use(bodyParser.json());
+app.use(multer().any())
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors({
   origin: 'http://localhost:3000',
@@ -98,8 +103,8 @@ mongoose.connect("mongodb+srv://BIKASH:2NQSqnkWjFq2TWNe@cluster0.bbmcbft.mongodb
   .then(() => console.log("MongoDB is connected"))
   .catch((err) => console.log(err.message));
 
-  initializeSocket(server);
-
+  initializeSocket(server);  // Rummy calling server
+  //handleSocket(server);   //poker calling server
   
 app.use("/", route);
 app.use("/", pokerRoute);
