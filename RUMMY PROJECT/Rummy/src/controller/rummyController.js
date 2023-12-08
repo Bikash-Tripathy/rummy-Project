@@ -106,9 +106,43 @@ exports.createGames = async (req, res) => {
 //     }
 //   };
 
+// exports.createRummyGame = async (req, res) => {
+//   try {
+//     const { pointValue, minEntry, maxPlayer, totalPlayers, selectedPlayersRange, players } = req.body;
+
+//     console.log('Received data:', req.body); // Log received data
+
+//     // Your additional logic to validate selectedPlayersRange here
+//     if (selectedPlayersRange < 2) {
+//       console.log('Validation failed:', selectedPlayersRange); // Log selectedPlayersRange when validation fails
+//       return res.status(400).json({ error: 'Selected players range must be 2 or more.' });
+//     }
+    
+
+//     // Create a new game
+//     const newGame = new rummyGameModel({
+//       pointValue,
+//       minEntry,
+//       maxPlayer,
+//       totalPlayers,
+//       selectedPlayersRange,
+//       players,
+//     });
+
+//     // Save the game to the database
+//     await newGame.save();
+
+//     res.status(201).json({ message: 'Rummy game created successfully', game: newGame });
+//   } catch (err) {
+//     console.error('Error:', err); // Log any caught error
+//     res.status(500).json({ error: 'Internal server error' });
+//   }
+// };
+
+
 exports.createRummyGame = async (req, res) => {
   try {
-    const { pointValue, minEntry, maxPlayer, totalPlayers, selectedPlayersRange } = req.body;
+    const { pointValue, minEntry, maxPlayer, totalPlayers, selectedPlayersRange, players } = req.body;
 
     console.log('Received data:', req.body); // Log received data
 
@@ -117,7 +151,11 @@ exports.createRummyGame = async (req, res) => {
       console.log('Validation failed:', selectedPlayersRange); // Log selectedPlayersRange when validation fails
       return res.status(400).json({ error: 'Selected players range must be 2 or more.' });
     }
-    
+
+    // Create an array of combined userid and socketid strings
+    const combinedPlayers = players.map(player => `${player.userid}:${player.socketid}`);
+
+    console.log('Combined Players:', combinedPlayers);
 
     // Create a new game
     const newGame = new rummyGameModel({
@@ -126,6 +164,7 @@ exports.createRummyGame = async (req, res) => {
       maxPlayer,
       totalPlayers,
       selectedPlayersRange,
+      players: combinedPlayers, // Set the players array with combined strings
     });
 
     // Save the game to the database
