@@ -62,20 +62,47 @@ const io = require('socket.io');
 //     res.status(500).json({ message: 'Server error' });
 //   }
 // };
+// exports.createGames = async (req, res) => {
+//   try {
+//     const { selectedPlayerCount } = req.body;
+
+//     // Validate selectedPlayerCount
+//     if (selectedPlayerCount !== "2" && selectedPlayerCount !== "5") {
+//       res.status(400).json({ message: 'Invalid selectedPlayerCount' });
+//       return;
+//     }
+
+//     // Query the database to find games with matching selectedPlayersRange
+//     const games = await rummyGameModel.find({ selectedPlayersRange: selectedPlayerCount });
+//     //console.log(games)
+
+//     // If no games match, return an empty array
+//     if (!games || games.length === 0) {
+//       res.json({ games: [] });
+//       return;
+//     }
+
+//     res.json({ games });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ message: 'Server error' });
+//   }
+// };
+
 exports.createGames = async (req, res) => {
   try {
     const { selectedPlayerCount } = req.body;
 
     // Validate selectedPlayerCount
-    if (selectedPlayerCount !== "2" && selectedPlayerCount !== "5") {
+    const validPlayerCounts = ["2", "3", "4", "5", "6"];
+    if (!validPlayerCounts.includes(selectedPlayerCount)) {
       res.status(400).json({ message: 'Invalid selectedPlayerCount' });
       return;
     }
 
     // Query the database to find games with matching selectedPlayersRange
     const games = await rummyGameModel.find({ selectedPlayersRange: selectedPlayerCount });
-    //console.log(games)
-
+    
     // If no games match, return an empty array
     if (!games || games.length === 0) {
       res.json({ games: [] });
@@ -88,7 +115,6 @@ exports.createGames = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
-
 
 
 
